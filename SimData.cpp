@@ -103,7 +103,7 @@ void	MyMenuHandlerCallback(
 	{
 		/* We read the data ref, add the increment and set it again.
 		 * This changes the nav frequency. */
-		XPLMSetDatai(gDataRef, XPLMGetDatai(gDataRef) + (int) inItemRef);
+		XPLMSetDatai(gDataRef, XPLMGetDatai(gDataRef) + (long) inItemRef);
 	}
 }                                   
 
