@@ -1,9 +1,9 @@
 BUILDDIR	:=	./build
 SRC_BASE	:=	.
-TARGET		:= SimData
+TARGET		:= winwing_fcu
 
 SOURCES = \
-	SimData.cpp
+	WinwingFCU.cpp
 
 LIBS = 
 
