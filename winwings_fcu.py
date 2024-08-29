@@ -5,6 +5,8 @@ UDP_IP = "127.0.0.1"
 UDP_PORT = 49000
 
 import binascii
+from enum import Enum
+import evdev
 import socket
 import struct
 
@@ -12,7 +14,21 @@ import struct
 import re
 import subprocess
 
-import pyglet
+from threading import Thread
+from time import sleep
+
+class BUTTON(Enum):
+    NORM = 0
+
+class Button:
+    def __init__(self, nr, label, button_type = BUTTON.NORM):
+        self.id = nr
+        self.type = button_type
+        self.label = label
+
+buttonlist = []
+
+fcu_device = None # usb /dev/inputx device
 
 # List of datarefs to request. 
 datarefs = [
@@ -43,6 +59,38 @@ datarefs = [
 
 
   ]
+
+def create_button_list():
+    buttonlist.append(Button(1, "MACH"))
+    buttonlist.append(Button(2, "LOC"))
+    buttonlist.append(Button(3, "TRK"))
+    buttonlist.append(Button(4, "AP1"))
+    buttonlist.append(Button(5, "AP2"))
+    buttonlist.append(Button(6, "A/THR"))
+    buttonlist.append(Button(7, "EXPED"))
+    buttonlist.append(Button(8, "METRIC"))
+    buttonlist.append(Button(9, "APPR"))
+    buttonlist.append(Button(10, "SPD DEC"))
+    buttonlist.append(Button(11, "SPD INC"))
+    buttonlist.append(Button(12, "SPD PUSH"))
+    buttonlist.append(Button(13, "SPD PULL"))
+    buttonlist.append(Button(14, "HDG DEC"))
+    buttonlist.append(Button(15, "HDG INC"))
+    buttonlist.append(Button(16, "HDG PUSH"))
+    buttonlist.append(Button(17, "HDG PULL"))
+    buttonlist.append(Button(18, "ALT DEC"))
+    buttonlist.append(Button(19, "ALT INC"))
+    buttonlist.append(Button(20, "ALT PUSH"))
+    buttonlist.append(Button(21, "ALT PULL"))
+    buttonlist.append(Button(22, "VS DEC"))
+    buttonlist.append(Button(23, "VS INC"))
+    buttonlist.append(Button(24, "VS PUSH"))
+    buttonlist.append(Button(25, "VS PULL"))
+    buttonlist.append(Button(26, "ALT 100"))
+    buttonlist.append(Button(27, "ALT 1000"))
+    buttonlist.append(Button(28, "FD"))
+    buttonlist.append(Button(29, "RES"))
+
 
 def RequestDataRefs(sock):
   for idx,dataref in enumerate(datarefs):
@@ -90,12 +138,42 @@ def print_usb_device():
             
     print(*devices, sep="\n")
 
-def main():
-    print_usb_device()
+def get_usb_fcu_device():
+    dev_list = evdev.list_devices()
 
-    joysticks = pyglet.input.get_joysticks()
-    devices = pyglet.input.get_devices()
-    print(joysticks)
+    fcu_device = None
+    for device in dev_list:
+        d = evdev.InputDevice(device)
+        print(d.name)
+        if d.name == 'Winwing WINWING SKYWALKER Metal Rudder Pedals':
+            print(f'found {d.name}')
+            print(d.capabilities(verbose=True))
+            d.close()
+            return device
+        d.close()
+    return None
+
+def fcu_get_events(fcu):
+        for event in fcu.read_loop():
+            if event.type == evdev.ecodes.EV_KEY: # button press
+                if event.value == 1:
+                    print(f'key {event.code} press')
+                elif event.value == 0:
+                    print(f'key {event.code} release')
+
+def main():
+    create_button_list()
+    #print_usb_device()
+
+    fcu_device = get_usb_fcu_device()
+    if fcu_device != None:
+        fcu = evdev.InputDevice(fcu_device)
+        usb_event_thread = Thread(target=fcu_get_events, args=[fcu])
+        usb_event_thread.start()
+
+        print(fcu.leds(verbose=True))
+
+    print('opening socket')
 
     # Open a Socket on UDP Port 49000
     sock = socket.socket(socket.AF_INET, # Internet
