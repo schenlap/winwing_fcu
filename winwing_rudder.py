@@ -124,6 +124,20 @@ def create_button_list_fcu():
 
 
 def RequestDataRefs(xp):
+  for idx,b in enumerate(buttonlist):
+    datacache[b.dataref] = None
+    # Send one RREF Command for every dataref in the list.
+    # Give them an index number and a frequency in Hz.
+    # To disable sending you send frequency 0. 
+    #cmd = b"RREF\x00"
+    #freq=1
+    #string = datarefs[idx][0].encode()
+    #message = struct.pack("<5sii400s", cmd, freq, idx, string)
+    #assert(len(message)==413)
+    #sock.sendto(message, (UDP_IP, UDP_PORT))
+    xp.AddDataRef(b.dataref, 3)
+
+def RequestDataRefs_old(xp):
   for idx,dataref in enumerate(datarefs):
     datacache[datarefs[idx][0]] = None
     # Send one RREF Command for every dataref in the list.
@@ -281,41 +295,9 @@ def main():
             #print(values)
             set_datacache(values)
             #sleep(2)
-        except XPlaneTimeout:
+        except XPlaneUdp.XPlaneTimeout:
             print("XPlane Timeout")
             exit(0)
-
-    while True:
-        # Receive packet
-        data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-        # Decode Packet
-        values = DecodePacket(data)
-        # Example values:
-        # {
-        #   0: (  47.85240554 , '°N'  , 'sim/flightmodel/position/latitude'           ),
-        #   1: (  12.54742622 , '°E'  , 'sim/flightmodel/position/longitude'          ),
-        #   2: (  1502.2      , 'ft'  , 'sim/flightmodel/misc/h_ind'                  ),
-        #   3: (  0.01        , 'm'   , 'sim/flightmodel/position/y_agl'              ),
-        #   4: (  76.41       , '°'   , 'sim/flightmodel/position/mag_psi'            ),
-        #   5: ( -9.76e-05    , 'kt'  , 'sim/flightmodel/position/indicated_airspeed' ),
-        #   6: (  1.39e-05    , 'm/s' , 'sim/flightmodel/position/groundspeed'        ),
-        #   7: ( -1.37e-06    , 'm/s' , 'sim/flightmodel/position/vh_ind'             )
-        # }
-
-        # Print Values:
-        for key,val in values.items():
-          print(f'rx: key: {key}, val: {val}')
-          print(("{0:10."+str(datarefs[key][3])+"f} {1:<5} {2}").format(val[0],val[1],val[2]))
-        print()
-        # Example:
-        # 47.852406 °N    sim/flightmodel/position/latitude
-        # 12.547426 °E    sim/flightmodel/position/longitude
-        #      1502 ft    sim/flightmodel/misc/h_ind
-        #         0 m     sim/flightmodel/position/y_agl
-        #        76 °     sim/flightmodel/position/mag_psi
-        #        -0 kt    sim/flightmodel/position/indicated_airspeed
-        #         0 m/s   sim/flightmodel/position/groundspeed
-        #      -0.0 m/s   sim/flightmodel/position/vh_ind
 
 if __name__ == '__main__':
   main() 
