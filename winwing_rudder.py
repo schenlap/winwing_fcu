@@ -35,11 +35,13 @@ class Leds(Enum):
     LOGO = 3
 
 class Button:
-    def __init__(self, nr, label, dataref, button_type = BUTTON.SWITCH):
+    def __init__(self, nr, label, dataref, button_type = BUTTON.SWITCH, led = None):
         self.id = nr
-        self.type = button_type
         self.label = label
         self.dataref = dataref
+        self.data = None
+        self.type = button_type
+        self.led = led
 
 buttonlist = []
 
@@ -88,8 +90,8 @@ xp = None
 
 
 def create_button_list():
-    buttonlist.append(Button(0, "AP1", "AirbusFBW/AP1Engage", BUTTON.TOGGLE))
-    buttonlist.append(Button(1, "AP2", "AirbusFBW/AP2Engage", BUTTON.TOGGLE))
+    buttonlist.append(Button(0, "AP2", "AirbusFBW/AP2Engage", BUTTON.TOGGLE, Leds.LEFT))
+    buttonlist.append(Button(1, "AP1", "AirbusFBW/AP1Engage", BUTTON.TOGGLE, Leds.RIGHT))
 
 def create_button_list_fcu():
     buttonlist.append(Button(0, "MACH"))
@@ -126,50 +128,8 @@ def create_button_list_fcu():
 def RequestDataRefs(xp):
   for idx,b in enumerate(buttonlist):
     datacache[b.dataref] = None
-    # Send one RREF Command for every dataref in the list.
-    # Give them an index number and a frequency in Hz.
-    # To disable sending you send frequency 0. 
-    #cmd = b"RREF\x00"
-    #freq=1
-    #string = datarefs[idx][0].encode()
-    #message = struct.pack("<5sii400s", cmd, freq, idx, string)
-    #assert(len(message)==413)
-    #sock.sendto(message, (UDP_IP, UDP_PORT))
     xp.AddDataRef(b.dataref, 3)
 
-def RequestDataRefs_old(xp):
-  for idx,dataref in enumerate(datarefs):
-    datacache[datarefs[idx][0]] = None
-    # Send one RREF Command for every dataref in the list.
-    # Give them an index number and a frequency in Hz.
-    # To disable sending you send frequency 0. 
-    #cmd = b"RREF\x00"
-    #freq=1
-    #string = datarefs[idx][0].encode()
-    #message = struct.pack("<5sii400s", cmd, freq, idx, string)
-    #assert(len(message)==413)
-    #sock.sendto(message, (UDP_IP, UDP_PORT))
-    xp.AddDataRef(datarefs[idx][0], freq=datarefs[idx][3])
-
-def DecodePacket(data):
-  retvalues = {}
-  # Read the Header "RREFO".
-  header=data[0:4]
-  if(header!=b"RREF"):
-    print("Unknown packet: ", binascii.hexlify(data))
-  else:
-    # We get 8 bytes for every dataref sent:
-    #    An integer for idx and the float value. 
-    values =data[5:]
-    lenvalue = 8
-    numvalues = int(len(values)/lenvalue)
-    idx=0
-    value=0
-    for i in range(0,numvalues):
-      singledata = data[(5+lenvalue*i):(5+lenvalue*(i+1))]
-      (idx,value) = struct.unpack("<if", singledata)
-      retvalues[idx] = (value, datarefs[idx][1], datarefs[idx][0])
-  return retvalues
 
 def print_usb_device():
     device_re = re.compile(b"Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
