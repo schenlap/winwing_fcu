@@ -39,7 +39,7 @@ class Button:
         self.id = nr
         self.label = label
         self.dataref = dataref
-        self.data = None
+        #self.data = None
         self.type = button_type
         self.led = led
 
@@ -85,13 +85,16 @@ datarefs = [
 buttons_press_event = [0] * BUTTONS_CNT
 buttons_release_event = [0] * BUTTONS_CNT
 
+fcu_out_endpoint = None
+fcu_in_endpoint = None
+
 xp = None
 
 
 
 def create_button_list():
-    buttonlist.append(Button(0, "AP2", "AirbusFBW/AP2Engage", BUTTON.TOGGLE, Leds.LEFT))
-    buttonlist.append(Button(1, "AP1", "AirbusFBW/AP1Engage", BUTTON.TOGGLE, Leds.RIGHT))
+    buttonlist.append(Button(0, "AP2", "AirbusFBW/AP2Engage", BUTTON.TOGGLE, Leds.RIGHT))
+    buttonlist.append(Button(1, "AP1", "AirbusFBW/AP1Engage", BUTTON.TOGGLE, Leds.LEFT))
 
 def create_button_list_fcu():
     buttonlist.append(Button(0, "MACH"))
@@ -210,14 +213,30 @@ def fcu_create_events(ep_in, ep_out, event):
             buttons_last = buttons
             #print(f'evets: press: {buttons_press_event}, release: {buttons_release_event}')
 
+def set_button_led(dataref, v):
+    for b in buttonlist:
+        if b.dataref == dataref:
+            if v >= 1:
+                v = 200
+            print(f'led: {b.led}, value: {v}')
+            fcu_set_led(fcu_out_endpoint, b.led, int(v))
+            break
+        else:
+            continue
+
+
+
 def set_datacache(values):
     global datacache
     for v in values:
         #print(f'cache: v:{v} val:{values[v]}')
-        datacache[v] = values[v]
+        if datacache[v] != values[v]:
+            datacache[v] = values[v]
+            set_button_led(v, values[v])
 
 def main():
     global xp
+    global fcu_in_endpoint, fcu_out_endpoint
 
     create_button_list()
     #print_usb_device()
@@ -231,12 +250,12 @@ def main():
         device.detach_kernel_driver(interface.bInterfaceNumber)
 
     endpoints = device[0].interfaces()[0].endpoints()
-    endpoint_out = endpoints[1]
-    endpoint_in = endpoints[0]
+    fcu_out_endpoint = endpoints[1]
+    fcu_in_endpoint = endpoints[0]
 
     event=Event()
 
-    usb_event_thread = Thread(target=fcu_create_events, args=[endpoint_in, endpoint_out, event])
+    usb_event_thread = Thread(target=fcu_create_events, args=[fcu_in_endpoint, fcu_out_endpoint, event])
     usb_event_thread.start()
 
     print('opening socket')
