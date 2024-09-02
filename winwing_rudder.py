@@ -195,7 +195,7 @@ def fcu_button_event():
 def fcu_create_events(ep_in, ep_out, event):
         buttons_last = 0
         while True:
-            sleep(0.1)
+            sleep(0.01)
             data_in = ep_in.read(0x81, 7)
             #print(f'usb ep data in: {data_in}')
             buttons=data_in[1]
@@ -273,7 +273,6 @@ def main():
             values = xp.GetValues()
             #print(values)
             set_datacache(values)
-            #sleep(2)
         except XPlaneUdp.XPlaneTimeout:
             print("XPlane Timeout")
             exit(0)
