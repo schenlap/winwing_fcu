@@ -4,3 +4,12 @@ So far it is a framework to trigger buttons and set LEDs from the flight simulat
 
 Tested with XP11.
 
+## installation
+copy `udev/71-winwing.rules` to `/etc/udev/rules.d`
+
+reread config
+`udevadm control --reload-rules`
+
+## start
+1. start X-Plane
+2. ./winwing_rudder.py
