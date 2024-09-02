@@ -18,8 +18,11 @@ USB device: 4098:bef0
 
 
 ## set leds
-send 14 bytes to endpoint 0x81
-0x02, 0xf0, 0xbe, 0, 0, 3, 0x49, led_nr, brightness, 0,0,0,0,0
+send 14 bytes to endpoint 0x81:
+
+| Report ID |  ? | ?  | | | ? | ? | led number | brightness | | | | | |
+| ---- ----|---------|----------|---------|----------|---------|----------|----|---|----------|----------|---------|----------|---------|
+| 0x02 | 0xf0 | 0xbe | 0x00 | 0x00 | 0x03 | 0x49 | x | x | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 |
 
 led number:
 0 .. left
