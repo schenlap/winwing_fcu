@@ -16,6 +16,13 @@ USB device: 4098:bef0
     00000080  02 09 02 91 02 c0                                 |......|
     00000086
 
+led number:
+0 .. left
+1 .. right
+2 .. left and right
+3 .. logo
+
+brightness: 0 - 255
 
 ## set leds
 send 14 bytes to endpoint 0x81:
@@ -24,10 +31,11 @@ send 14 bytes to endpoint 0x81:
 | ---- ----|---------|----------|---------|----------|---------|----------|----|---|----------|----------|---------|----------|---------|
 | 0x02 | 0xf0 | 0xbe | 0x00 | 0x00 | 0x03 | 0x49 | x | x | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 |
 
-led number:
-0 .. left
-1 .. right
-2 .. left and right
-3 .. logo
+## store values
+send 14 bytes to endpoint 0x81:
 
-brightness: 0 - 255
+| Report ID |  ? | ?  | | | ? | ? | ? |  | | logo | right | left | |
+|--------|---------|----------|---------|----------|---------|----------|----|---|----------|----------|---------|----------|---------|
+| 0x02 | 0xf0 | 0xbe | 0x00 | 0x00 | 0x08 | 0x06 | 0xe8 | 0x00 | 0x00 | x | x | x | 0xff |
+
+
