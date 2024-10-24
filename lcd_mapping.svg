@@ -24,15 +24,15 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.2938725"
-     inkscape:cx="207.51659"
-     inkscape:cy="-21.254027"
+     inkscape:zoom="1.829812"
+     inkscape:cx="292.92626"
+     inkscape:cy="301.94358"
      inkscape:window-width="1444"
-     inkscape:window-height="1236"
-     inkscape:window-x="957"
-     inkscape:window-y="64"
+     inkscape:window-height="790"
+     inkscape:window-x="1280"
+     inkscape:window-y="251"
      inkscape:window-maximized="0"
-     inkscape:current-layer="g1459" />
+     inkscape:current-layer="layer1" />
   <defs
      id="defs2" />
   <g
@@ -227,6 +227,17 @@
          cx="37.217091"
          cy="33.229542"
          r="1.3013632" />
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:2.82223px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#b3b3b3;stroke-width:0.264583"
+         x="3.4763215"
+         y="99.790871"
+         id="text1686"><tspan
+           sodipodi:role="line"
+           id="tspan1684"
+           style="stroke-width:0.264583"
+           x="3.4763215"
+           y="99.790871" /></text>
     </g>
     <g
        id="g1459-1"
@@ -242,14 +253,14 @@
            x="37.574593"
            y="11.659535" />
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#800080;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-7-8-3"
            width="2.1982622"
            height="8.5374365"
            x="48.080242"
            y="11.736218" />
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#800080;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-4-8-3"
            width="2.1982622"
            height="8.5374365"
@@ -263,7 +274,7 @@
            x="37.54903"
            y="21.858446" />
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#800080;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-8-1-8"
            width="2.1982622"
            height="8.5374365"
@@ -279,7 +290,7 @@
            y="39.696175"
            transform="rotate(-90)" />
         <rect
-           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#800080;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-5-9-9-0"
            width="2.1982622"
            height="8.5374365"
@@ -298,14 +309,14 @@
            x="37.574593"
            y="11.659535" />
         <rect
-           style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-7-8-8"
            width="2.1982622"
            height="8.5374365"
            x="48.080242"
            y="11.736218" />
         <rect
-           style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-4-8-9"
            width="2.1982622"
            height="8.5374365"
@@ -319,7 +330,7 @@
            x="37.54903"
            y="21.858446" />
         <rect
-           style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-8-1-7"
            width="2.1982622"
            height="8.5374365"
@@ -335,7 +346,7 @@
            y="39.696175"
            transform="rotate(-90)" />
         <rect
-           style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-5-9-9-3"
            width="2.1982622"
            height="8.5374365"
@@ -354,14 +365,14 @@
            x="37.574593"
            y="11.659535" />
         <rect
-           style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-7-8-0"
            width="2.1982622"
            height="8.5374365"
            x="48.080242"
            y="11.736218" />
         <rect
-           style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-4-8-92"
            width="2.1982622"
            height="8.5374365"
@@ -375,7 +386,7 @@
            x="37.54903"
            y="21.858446" />
         <rect
-           style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-8-1-4"
            width="2.1982622"
            height="8.5374365"
@@ -391,7 +402,7 @@
            y="39.696175"
            transform="rotate(-90)" />
         <rect
-           style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
+           style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.256277"
            id="rect5820-5-9-9-5"
            width="2.1982622"
            height="8.5374365"
@@ -483,13 +494,13 @@
          y="6.244122">HDG</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#800080;stroke-width:0.264583"
        x="105.47061"
        y="5.9549298"
        id="text1705-5-9"><tspan
          sodipodi:role="line"
          id="tspan1703-6-4"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583;fill:#800080"
          x="105.47061"
          y="5.9549298">LAT</tspan></text>
     <text
@@ -536,99 +547,98 @@
          style="font-size:2.82222px;stroke-width:0.264583"
          x="27.708328"
          y="21.266907" /></text>
-    <path
-       d="m 50.58609,54.239837 -1.322917,-1.322916 h -7.9375 l -1.322917,1.322916 1.322917,1.322917 h 7.9375 z m 0,0 -1.322917,1.322917 v 7.9375 l 1.322917,1.322917 1.322917,-1.322917 v -7.9375 z m 0,21.166668 -1.322917,-1.322917 v -7.9375 l 1.322917,-1.322917 1.322917,1.322917 v 7.9375 z m 0,0 -1.322917,-1.322917 h -7.9375 l -1.322917,1.322917 1.322917,1.322916 h 7.9375 z M 40.002756,64.823171 38.67984,66.146088 v 7.9375 l 1.322916,1.322917 1.322917,-1.322917 v -7.9375 z m 0,0 -1.322916,-1.322917 v -7.9375 l 1.322916,-1.322917 1.322917,1.322917 v 7.9375 z m 0,0 1.322917,1.322917 h 7.9375 l 1.322917,-1.322917 -1.322917,-1.322917 h -7.9375 z"
-       fill="#dddddd"
-       id="s-0"
-       style="stroke-width:1.32292" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="43.510059"
-       y="51.03233"
-       id="text1705-9"><tspan
-         sodipodi:role="line"
-         id="tspan1703-63"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+    <g
+       id="g6001"
+       transform="translate(121.01212,5.2157284)">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
          x="43.510059"
-         y="51.03233">A</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="53.095394"
-       y="61.464741"
-       id="text1705-9-8"><tspan
-         sodipodi:role="line"
-         id="tspan1703-63-5"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+         y="51.03233"
+         id="text1705-9"><tspan
+           sodipodi:role="line"
+           id="tspan1703-63"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+           x="43.510059"
+           y="51.03233">A</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
          x="53.095394"
-         y="61.464741">B</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="53.060944"
-       y="72.507179"
-       id="text1705-9-8-6"><tspan
-         sodipodi:role="line"
-         id="tspan1703-63-5-1"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+         y="61.464741"
+         id="text1705-9-8"><tspan
+           sodipodi:role="line"
+           id="tspan1703-63-5"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+           x="53.095394"
+           y="61.464741">B</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
          x="53.060944"
-         y="72.507179">C</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="42.959877"
-       y="83.137177"
-       id="text1705-9-8-6-1"><tspan
-         sodipodi:role="line"
-         id="tspan1703-63-5-1-5"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+         y="72.507179"
+         id="text1705-9-8-6"><tspan
+           sodipodi:role="line"
+           id="tspan1703-63-5-1"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+           x="53.060944"
+           y="72.507179">C</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
          x="42.959877"
-         y="83.137177">D</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="31.61071"
-       y="72.912712"
-       id="text1705-9-8-6-9"><tspan
-         sodipodi:role="line"
-         id="tspan1703-63-5-1-8"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+         y="83.137177"
+         id="text1705-9-8-6-1"><tspan
+           sodipodi:role="line"
+           id="tspan1703-63-5-1-5"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+           x="42.959877"
+           y="83.137177">D</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
          x="31.61071"
-         y="72.912712">E</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="32.121933"
-       y="61.665783"
-       id="text1705-9-8-6-4"><tspan
-         sodipodi:role="line"
-         id="tspan1703-63-5-1-81"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+         y="72.912712"
+         id="text1705-9-8-6-9"><tspan
+           sodipodi:role="line"
+           id="tspan1703-63-5-1-8"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+           x="31.61071"
+           y="72.912712">E</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
          x="32.121933"
-         y="61.665783">F</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="42.44865"
-       y="63.199455"
-       id="text1705-9-8-6-0"><tspan
-         sodipodi:role="line"
-         id="tspan1703-63-5-1-3"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+         y="61.665783"
+         id="text1705-9-8-6-4"><tspan
+           sodipodi:role="line"
+           id="tspan1703-63-5-1-81"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+           x="32.121933"
+           y="61.665783">F</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
          x="42.44865"
-         y="63.199455">G</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="25.067045"
-       y="82.72821"
-       id="text1705-9-8-6-04"><tspan
-         sodipodi:role="line"
-         id="tspan1703-63-5-1-4"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+         y="63.199455"
+         id="text1705-9-8-6-0"><tspan
+           sodipodi:role="line"
+           id="tspan1703-63-5-1-3"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+           x="42.44865"
+           y="63.199455">G</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
          x="25.067045"
-         y="82.72821">DP</tspan></text>
+         y="82.72821"
+         id="text1705-9-8-6-04"><tspan
+           sodipodi:role="line"
+           id="tspan1703-63-5-1-4"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
+           x="25.067045"
+           y="82.72821">DP</tspan></text>
+    </g>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#ff0000;stroke-width:0.264583"
@@ -697,7 +707,7 @@
          y="41.615528">s2</tspan></text>
     <g
        id="g5945-7"
-       transform="translate(37.927518,47.582674)">
+       transform="translate(122.79066,48.605121)">
       <rect
          style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
          id="rect5820-53"
@@ -751,5 +761,67 @@
          y="39.542805"
          transform="rotate(-90)" />
     </g>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:2.82223px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#000000;stroke-width:0.264583"
+       x="11.519243"
+       y="71.217072"
+       id="text1742"><tspan
+         sodipodi:role="line"
+         id="tspan1740"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
+         x="11.519243"
+         y="71.217072">f0 00 pkg_nr 31 10 bb 00 00 02 01 00 00 ff ff 02 00</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
+         x="11.519243"
+         y="74.744858"
+         id="tspan4049">00 20 00     00 00 00 00 00 00 <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#000080"
+   id="tspan3724">s2</tspan> <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#ff00ff"
+   id="tspan3828">s1</tspan> <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#00ff00"
+   id="tspan3932">s0 </tspan><tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#0000ff"
+   id="tspan3412">h2</tspan> <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#ff0000"
+   id="tspan3516">h1</tspan> <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#008000"
+   id="tspan3620">h0 </tspan><tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#800080"
+   id="tspan3308">xx</tspan></tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
+         x="11.519243"
+         y="78.272644"
+         id="tspan4066">ac bf 1f     b6 bf bf af 7f 63 43 00 00 00 00 00 00</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
+         x="11.519243"
+         y="81.800438"
+         id="tspan3306">00 00 00     00 00 00 00 00 00 00 00 00 00 00 00 00</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:2.82223px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#00ff00;stroke-width:0.264583"
+       x="104.81457"
+       y="75.975739"
+       id="text4074"><tspan
+         sodipodi:role="line"
+         id="tspan4072"
+         style="fill:#000000;stroke-width:0.264583"
+         x="104.81457"
+         y="75.975739">Set LCD</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:2.82223px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#00ff00;stroke-width:0.264583"
+       x="105.21437"
+       y="100.96742"
+       id="text4074-3"><tspan
+         sodipodi:role="line"
+         id="tspan4072-6"
+         style="fill:#000000;stroke-width:0.264583"
+         x="105.21437"
+         y="100.96742">Update Display</tspan></text>
   </g>
 </svg>
