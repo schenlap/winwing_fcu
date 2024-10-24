@@ -1,5 +1,5 @@
 # winwing_fcu
-A X-Plane plugin for winwing fcu for ToLISS Airbus A319.
+The goal is to develop a X-Plane plugin for winwing fcu for ToLISS Airbus A319.
 So far it is a framework to trigger buttons and set LEDs on winwing fcu device.
 
 Tested with XP12 under linux (debian trixie).
@@ -13,7 +13,7 @@ Tested with XP12 under linux (debian trixie).
 ## MAC-OS
 If you can help with the MAX-OS integration, please create a pull request.
 
-## test frmework
+## test framework
 1. Make test_endpoint executable  
    `chmod +x ./test_endpoint.py`
 2. test connection  
