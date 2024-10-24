@@ -1,1 +1,1 @@
-ATTRS{idVendor}=="4098", ATTRS{idProduct}=="bef0", GROUP="plugdev", TAG+="uaccess"
+ATTRS{idVendor}=="4098", ATTRS{idProduct}=="bb10", GROUP="plugdev", TAG+="uaccess"

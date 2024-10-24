@@ -6,6 +6,9 @@ Tested with XP11.
 
 ## installation
 copy `udev/71-winwing.rules` to `/etc/udev/rules.d`
+sudo cp udev/71-winwing.rules /etc/udev/rules.d/
+
+sudo aptitude install python3-evdev python3-usb
 
 reread config
 `udevadm control --reload-rules`
