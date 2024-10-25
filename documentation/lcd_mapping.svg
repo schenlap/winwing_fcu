@@ -24,13 +24,13 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.829812"
-     inkscape:cx="292.92626"
-     inkscape:cy="301.94358"
-     inkscape:window-width="1444"
-     inkscape:window-height="790"
-     inkscape:window-x="1280"
-     inkscape:window-y="251"
+     inkscape:zoom="1.2938725"
+     inkscape:cx="232.24855"
+     inkscape:cy="229.15705"
+     inkscape:window-width="1260"
+     inkscape:window-height="1028"
+     inkscape:window-x="58"
+     inkscape:window-y="69"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -238,6 +238,12 @@
            style="stroke-width:0.264583"
            x="3.4763215"
            y="99.790871" /></text>
+      <circle
+         style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         id="path9227-3"
+         cx="54.440361"
+         cy="22.412367"
+         r="1.3013632" />
     </g>
     <g
        id="g1459-1"
@@ -416,6 +422,12 @@
          cx="6.8950605"
          cy="32.818134"
          r="1.3013632" />
+      <circle
+         style="fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         id="path9227-3-6"
+         cx="54.24049"
+         cy="20.912685"
+         r="1.3013632" />
     </g>
     <g
        id="g1459-9"
@@ -506,13 +518,13 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
-       x="113.47108"
+       x="117.35638"
        y="22.536949"
        id="text1705-5-8"><tspan
          sodipodi:role="line"
          id="tspan1703-6-1"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583"
-         x="113.47108"
+         x="117.35638"
          y="22.536949">HDG</tspan></text>
     <text
        xml:space="preserve"
@@ -549,7 +561,7 @@
          y="21.266907" /></text>
     <g
        id="g6001"
-       transform="translate(121.01212,5.2157284)">
+       transform="translate(-10.714755,42.955261)">
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#000000;stroke-width:0.264583"
@@ -642,25 +654,25 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#ff0000;stroke-width:0.264583"
-       x="82.049568"
-       y="44.067345"
+       x="78.777733"
+       y="43.965099"
        id="text1705-9-8-6-44"><tspan
          sodipodi:role="line"
          id="tspan1703-63-5-1-7"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583;fill:#ff0000"
-         x="82.049568"
-         y="44.067345">h1</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#ff0000;stroke-width:0.264583"
+         x="78.777733"
+         y="43.965099">h2</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#008000;stroke-width:0.264583"
-       x="96.486824"
-       y="44.17931"
+       x="89.227448"
+       y="43.770329"
        id="text1705-9-8-6-44-7"><tspan
          sodipodi:role="line"
          id="tspan1703-63-5-1-7-5"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583;fill:#008000"
-         x="96.486824"
-         y="44.17931">h0</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#008000;stroke-width:0.264583"
+         x="89.227448"
+         y="43.770329">h1</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#0000ff;stroke-width:0.264583"
@@ -669,9 +681,9 @@
        id="text1705-9-8-6-44-9"><tspan
          sodipodi:role="line"
          id="tspan1703-63-5-1-7-6"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';stroke-width:0.264583;fill:#0000ff"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#0000ff;stroke-width:0.264583"
          x="68.290619"
-         y="44.034718">h2</tspan></text>
+         y="44.034718">h3</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#ff00ff;stroke-width:0.264583"
@@ -707,7 +719,7 @@
          y="41.615528">s2</tspan></text>
     <g
        id="g5945-7"
-       transform="translate(122.79066,48.605121)">
+       transform="translate(-8.9362151,86.344654)">
       <rect
          style="fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:0.256277"
          id="rect5820-53"
@@ -778,19 +790,19 @@
          y="74.744858"
          id="tspan4049">00 20 00     00 00 00 00 00 00 <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#000080"
-   id="tspan3724">s2</tspan> <tspan
+   id="tspan3724">s3</tspan> <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#ff00ff"
-   id="tspan3828">s1</tspan> <tspan
+   id="tspan3828">s2</tspan> <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#00ff00"
-   id="tspan3932">s0 </tspan><tspan
+   id="tspan3932">s1 </tspan><tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#0000ff"
-   id="tspan3412">h2</tspan> <tspan
+   id="tspan3412">h3</tspan> <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#ff0000"
-   id="tspan3516">h1</tspan> <tspan
+   id="tspan3516">h2</tspan> <tspan
    style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#008000"
-   id="tspan3620">h0 </tspan><tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#800080"
-   id="tspan3308">xx</tspan></tspan><tspan
+   id="tspan3620">h1 <tspan
+   style="fill:#800080"
+   id="tspan8643">h0</tspan></tspan></tspan><tspan
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:monospace;-inkscape-font-specification:'monospace Bold';stroke-width:0.264583"
          x="11.519243"
@@ -823,5 +835,16 @@
          style="fill:#000000;stroke-width:0.264583"
          x="105.21437"
          y="100.96742">Update Display</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;font-family:'Droid Sans Fallback';-inkscape-font-specification:'Droid Sans Fallback';fill:#008000;stroke-width:0.264583"
+       x="99.502808"
+       y="43.323746"
+       id="text1705-9-8-6-44-7-7"><tspan
+         sodipodi:role="line"
+         id="tspan1703-63-5-1-7-5-5"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans Bold';fill:#800080;stroke-width:0.264583"
+         x="99.502808"
+         y="43.323746">h0</tspan></text>
   </g>
 </svg>
