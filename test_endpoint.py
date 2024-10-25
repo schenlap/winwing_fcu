@@ -60,6 +60,24 @@ def lcd_set(ep, cmd):
     cmd = bytes(data)
     ep.write(cmd)
 
+
+def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wired mapping
+    # return array with one byte more than lcd chars
+
+    l = num_7segments
+    d = [0] * (l + 1)
+
+    for i in range(min(l, len(string))): # heading display has a twisted mapping
+        d[l -1 - i] = representations[string[i]]
+    for i in range(len(d)):
+        d[i] = swap_nibbles(d[i])
+    for i in range(0, len(d) - 1):
+        d[l-i] = (d[l-i] & 0x0f) | (d[l-1-i] & 0xf0)
+        d[l-1-i] = d[l-1-i] & 0x0f
+
+    return d
+
+
 #      A
 #      ---
 #   F | G | B
@@ -68,31 +86,29 @@ def lcd_set(ep, cmd):
 #      ---
 #       D
 
-def lcd_set_heading_xxx(ep, speed, heading):
-    spd = 0x08
-    hdg1 = 0x80
-    lat = 0x20
+def lcd_set_heading_xxx(ep, speed, heading, alt, new):
+    spd_flag = 0x08
+    hdg1_flag = 0x80
+    lat_flag = 0x20
 
     h2_dp = 0x10
-
+    hdg2_flag = 0x08 # a[5]
+    v_s_flag = 0x04 # a[5]
+    trk_flag = 0x02 # a[5]
+    fpa_flag = 0x01 # a[5]
+    alt_flag = 0x10 # a[4]
 
     s = [0,0,0]
     s_str = str(speed)
     for i in range(min(3, len(s_str))):
         s[2 - i] = representations[s_str[i]]
 
-    h = [0,0,0,0]
-    h_str = str(heading)
-    for i in range(min(3, len(h_str))): # heading display has a twisted mapping
-        h[2 - i] = representations[h_str[i]]
-    for i in range(len(h)):
-        h[i] = swap_nibbles(h[i])
-    for i in range(0, len(h) - 1):
-        h[3-i] = (h[3-i] & 0x0f) | (h[2-i] & 0xf0)
-        h[2-i] = h[2-i] & 0x0f
+    h = data_from_string_swapped(3, str(heading))
+
+    a = data_from_string_swapped(5, str(alt))
 
     pkg_nr = 1
-    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | spd, h[2], h[1], h[0] | hdg1 | lat, 0xac, 0xbf, 0x1f, 0xb6, 0xbf, 0xbf, 0xaf, 0x7f, 0x63, 0x43, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
+    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | spd_flag, h[2], h[1], h[0] | hdg1_flag | lat_flag, a[5], a[4], a[3], a[2], a[1], a[0], 0xaf, 0x7f, 0x63, 0x43, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
     cmd = bytes(data)
     ep.write(cmd)
 
@@ -151,11 +167,12 @@ while True:
     winwing_fcu_set_led(endpoint_out, Leds.AP1_GREEN, 1)
     winwing_fcu_set_led(endpoint_out, Leds.AP2_GREEN, 0)
     #lcd_set(endpoint_out, Lcd.ALL_ON)
-    lcd_set_heading_xxx(endpoint_out, speed, heading)
-    speed = speed + 1
-    heading = heading + 3
+    lcd_set_heading_xxx(endpoint_out, speed, 0, 0, 0x10) # bf
+    #speed = speed + 1
+    #heading = heading + 3
     time.sleep(0.5)
     winwing_fcu_set_led(endpoint_out, Leds.AP1_GREEN, 0)
     winwing_fcu_set_led(endpoint_out, Leds.AP2_GREEN, 1)
-    lcd_set(endpoint_out, Lcd.ALL_OFF)
+    #lcd_set(endpoint_out, Lcd.ALL_OFF)
+    lcd_set_heading_xxx(endpoint_out, speed, heading, alt, 0x00)
     time.sleep(0.5)
