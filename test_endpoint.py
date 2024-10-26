@@ -35,6 +35,34 @@ representations = {
     '7' : 0xe0,
     '8' : 0xfe,
     '9' : 0xfc,
+    'A' : 0xee,
+    'B' : 0xfe,
+    'C' : 0x9a,
+    'D' : 0x76,
+    'E' : 0x9e,
+    'F' : 0x8e,
+    'G' : 0xbe,
+    'H' : 0x6e,
+    'I' : 0x60,
+    'J' : 0x70,
+    'K' : 0x0e,
+    'L' : 0x1a,
+    'M' : 0xa6,
+    'N' : 0x26,
+    'O' : 0xfa,
+    'P' : 0xce,
+    'Q' : 0xec,
+    'R' : 0x06,
+    'S' : 0xbc,
+    'T' : 0x1e,
+    'U' : 0x7a,
+    'V' : 0x32,
+    'W' : 0x58,
+    'X' : 0x6e,
+    'Y' : 0x7c,
+    'Z' : 0xd6,
+    '-' : 0x04,
+
 }
 
 
@@ -68,7 +96,7 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
     d = [0] * (l + 1)
 
     for i in range(min(l, len(string))): # heading display has a twisted mapping
-        d[l -1 - i] = representations[string[i]]
+        d[l -1 - i] = representations[string.upper()[i]]
     for i in range(len(d)):
         d[i] = swap_nibbles(d[i])
     for i in range(0, len(d) - 1):
