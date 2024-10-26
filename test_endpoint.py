@@ -155,7 +155,7 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
     d = data_from_string(l, string)
     d.append(0)
 
-    # fix wired segemnt mapping
+    # fix wired segment mapping
     for i in range(len(d)):
         d[i] = swap_nibbles(d[i])
     for i in range(0, len(d) - 1):
@@ -165,7 +165,7 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
     return d
 
 
-def lcd_set(ep, speed, heading, alt,vs, new):
+def winwing_fcu_lcd_set(ep, speed, heading, alt,vs, new):
     s = data_from_string( 3, str(speed))
     h = data_from_string_swapped(3, str(heading))
     a = data_from_string_swapped(5, str(alt))
@@ -212,11 +212,11 @@ while True:
     print(num_bytes)
     winwing_fcu_set_led(endpoint_out, Leds.AP1_GREEN, 1)
     winwing_fcu_set_led(endpoint_out, Leds.AP2_GREEN, 0)
-    lcd_set(endpoint_out, speed, heading, alt, vs, 0x0) # bf
+    winwing_fcu_lcd_set(endpoint_out, speed, heading, alt, vs, 0x0)
     speed = speed + 1
     #heading = heading + 3
     time.sleep(0.5)
     winwing_fcu_set_led(endpoint_out, Leds.AP1_GREEN, 0)
     winwing_fcu_set_led(endpoint_out, Leds.AP2_GREEN, 1)
-    lcd_set(endpoint_out, speed, heading, alt, vs, 0xff)
+    winwing_fcu_lcd_set(endpoint_out, speed, heading, alt, vs, 0xff)
     time.sleep(0.5)
