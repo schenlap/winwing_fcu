@@ -19,3 +19,6 @@ If you can help with the MAX-OS integration, please create a pull request.
 2. test connection  
    `./test_endpoint.py`  
    AP1 and AP2 led should blink alternately
+
+## developers
+See [documention](./documentation/README.md) for developers
