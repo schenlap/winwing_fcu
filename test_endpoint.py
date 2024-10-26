@@ -86,7 +86,7 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
 #      ---
 #       D
 
-def lcd_set_heading_xxx(ep, speed, heading, alt, new):
+def lcd_set_heading_xxx(ep, speed, heading, alt,vs, new):
     spd_flag = 0x08
     hdg1_flag = 0x80
     lat_flag = 0x20
@@ -104,11 +104,12 @@ def lcd_set_heading_xxx(ep, speed, heading, alt, new):
         s[2 - i] = representations[s_str[i]]
 
     h = data_from_string_swapped(3, str(heading))
-
     a = data_from_string_swapped(5, str(alt))
+    v = data_from_string_swapped(4, str(vs)) # v[1] includes V/s and FPA instead of 4th segment
+
 
     pkg_nr = 1
-    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | spd_flag, h[2], h[1], h[0] | hdg1_flag | lat_flag, a[5], a[4], a[3], a[2], a[1], a[0], 0xaf, 0x7f, 0x63, 0x43, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
+    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | spd_flag, h[2], h[1], h[0] | hdg1_flag | lat_flag, a[5], a[4], a[3], a[2], a[1], a[0], v[4], v[3], v[2], v[1], 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, new, new, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
     cmd = bytes(data)
     ep.write(cmd)
 
@@ -159,7 +160,10 @@ lcd_init(endpoint_out)
 endpoint_in = endpoints[0]
 print(endpoint_in)
 speed = 100
-heading = 180
+heading = 888
+alt = 16000
+vs = 8888
+
 while True:
     buf_in = [None] * 7
     num_bytes = endpoint_in.read(0x81, 7)
@@ -167,12 +171,12 @@ while True:
     winwing_fcu_set_led(endpoint_out, Leds.AP1_GREEN, 1)
     winwing_fcu_set_led(endpoint_out, Leds.AP2_GREEN, 0)
     #lcd_set(endpoint_out, Lcd.ALL_ON)
-    lcd_set_heading_xxx(endpoint_out, speed, 0, 0, 0x10) # bf
-    #speed = speed + 1
+    lcd_set_heading_xxx(endpoint_out, speed, heading, alt, vs, 0x0) # bf
+    speed = speed + 1
     #heading = heading + 3
     time.sleep(0.5)
     winwing_fcu_set_led(endpoint_out, Leds.AP1_GREEN, 0)
     winwing_fcu_set_led(endpoint_out, Leds.AP2_GREEN, 1)
     #lcd_set(endpoint_out, Lcd.ALL_OFF)
-    lcd_set_heading_xxx(endpoint_out, speed, heading, alt, 0x00)
+    lcd_set_heading_xxx(endpoint_out, speed, heading, alt, vs, 0xff)
     time.sleep(0.5)
