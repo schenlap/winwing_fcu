@@ -1,5 +1,6 @@
 #!/bin/env python3
 
+from dataclasses import dataclass
 import time
 import usb.core
 import usb.util
@@ -72,8 +73,53 @@ representations = {
     'Y' : 0x7c,
     'Z' : 0xd6,
     '-' : 0x04,
-
 }
+
+class Byte(Enum):
+    H0 = 0
+    H3 = 1
+    A0 = 2
+    A1 = 3
+    A2 = 4
+    A3 = 5
+    A4 = 6
+    A5 = 7
+    V2 = 8
+    V3 = 9
+    V0 = 10
+    V1 = 11
+
+
+
+@dataclass
+class Flag:
+    name : str
+    byte : Byte
+    mask : int
+    value : bool = False
+
+
+flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
+              ("mach", Flag('spd-mach_mach', Byte.H3, 0x04)),
+              ("hdg", Flag('hdg-trk-lat_hdg', Byte.H0, 0x80)),
+              ("trk", Flag('hdg-trk-lat_trk', Byte.H0, 0x40)),
+              ("lat", Flag('hdg-trk-lat_lat', Byte.H0, 0x20)),
+              ("vshdg", Flag('hdg-v/s_hdg', Byte.A5, 0x08)),
+              ("vs", Flag('hdg-v/s_v/s', Byte.A5, 0x04)),
+              ("ftrk", Flag('trk-fpa_trk', Byte.A5, 0x02)),
+              ("ffpa", Flag('trk-fpa_fpa', Byte.A5, 0x01)),
+              ("alt", Flag('alt', Byte.A4, 0x10)),
+              ("hdg_managed", Flag('hdg managed', Byte.H0, 0x10)),
+              ("spd_managed", Flag('spd managed', Byte.H3, 0x02)),
+              ("alt_managed", Flag('alt_managed', Byte.V1, 0x10)),
+              ("vs_horz", Flag('v/s plus horizontal', Byte.A0, 0x10)),
+              ("vs_vert", Flag('v/s plus vertical', Byte.V2, 0x10)),
+              ("lvl", Flag('lvl change', Byte.A2, 0x10)),
+              ("lvl_left", Flag('lvl change left', Byte.A3, 0x10)),
+              ("lvl_right", Flag('lvl change right', Byte.A1, 0x10)),
+              ("fvs", Flag('v/s-fpa_v/s', Byte.V0, 0x40)),
+              ("ffpa2", Flag('v/s-fpa_fpa', Byte.V0, 0x80)),
+              ])
 
 
 def swap_nibbles(x):
@@ -120,31 +166,17 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
 
 
 def lcd_set(ep, speed, heading, alt,vs, new):
-    speed_mode_speed_flag = 0x08 # h[3]
-    speed_mode_mach_flag = 0x04 # h[3]
-    lateral_mode_heading_flag = 0x80 # h[0]
-    lateral_mode_lateral_flag = 0x20 # h[0]
-
-    h2_dp = 0x10
-    hdg2_flag = 0x08 # a[5]
-    v_s_flag = 0x04 # a[5]
-    trk_flag = 0x02 # a[5]
-    fpa_flag = 0x01 # a[5]
-    alt_flag = 0x10 # a[4]
-
-    spd_managed_flag = 0x02 # h[3]
-    hdg_managed_flag = 0x10 # h[0]
-    alt_managed_flag = 0x10 # v[2]
-
-    vs_minus_horiz = 0x10 # a[0]
-    vs_minus_vert = 0x10 # v[3]
-
     s = data_from_string( 3, str(speed))
     h = data_from_string_swapped(3, str(heading))
     a = data_from_string_swapped(5, str(alt))
-    v = data_from_string_swapped(4, str(vs)) # v[1] includes V/s and FPA instead of 4th segment
+    v = data_from_string_swapped(4, str(vs))
+
+    bl = [0] * len(Byte)
+    for f in flags:
+        bl[flags[f].byte.value] |= (flags[f].mask * flags[f].value)
+
     pkg_nr = 1
-    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3], h[2], h[1], h[0], a[5], a[4], a[3], a[2], a[1], a[0] | v[4], v[3], v[2], v[1], v[0], 0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
+    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | bl[Byte.H3.value], h[2], h[1], h[0] | bl[Byte.H0.value], a[5] | bl[Byte.A5.value], a[4] | bl[Byte.A4.value], a[3] | bl[Byte.A3.value], a[2] | bl[Byte.A2.value], a[1] | bl[Byte.A1.value], a[0] | v[4] | bl[Byte.A0.value], v[3] | bl[Byte.V3.value], v[2] | bl[Byte.V2.value], v[1] | bl[Byte.V1.value], v[0] | bl[Byte.V0.value], 0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
     cmd = bytes(data)
     ep.write(cmd)
 

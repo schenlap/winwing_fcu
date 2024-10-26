@@ -25,13 +25,13 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="214.60691"
-     inkscape:cy="328.27432"
-     inkscape:window-width="1946"
-     inkscape:window-height="1368"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="688.72201"
+     inkscape:cy="304.76302"
+     inkscape:window-width="1260"
+     inkscape:window-height="730"
+     inkscape:window-x="58"
+     inkscape:window-y="69"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" /><defs
      id="defs2"><rect
@@ -1122,7 +1122,7 @@
          x="10.459299"
          y="41.615528">s2</tspan></text><g
        id="g18334"
-       transform="translate(133.93876,-27.5591)"><g
+       transform="translate(141.42231,-36.165179)"><g
          id="g6001"
          transform="translate(-10.714755,42.955261)"><text
            xml:space="preserve"
@@ -1656,7 +1656,7 @@
            id="tspan2783-2-5-1-0-7-5"
            style="fill:#000000;stroke-width:0.264583"
            x="303.23868"
-           y="-1.8830863">v1 0x40</tspan></text></g><g
+           y="-1.8830863">v0 0x40</tspan></text></g><g
        id="g19637-0"
        transform="translate(14.870737,-0.37189986)"><text
          xml:space="preserve"
@@ -1678,7 +1678,7 @@
            id="tspan2783-2-5-1-0-7-5-8"
            style="fill:#000000;stroke-width:0.264583"
            x="303.23868"
-           y="-1.8830863">v1 0x80</tspan></text></g><rect
+           y="-1.8830863">v0 0x80</tspan></text></g><rect
        style="fill:none;stroke:#ff0000;stroke-width:0.220942"
        id="rect20425"
        width="4.9721451"
@@ -2404,7 +2404,7 @@ Qo3ifwHRoJ2s0Zg+/AAAAABJRU5ErkJggg==
          id="tspan2783-2-5-1-0-3"
          style="fill:#000000;stroke-width:0.264583"
          x="257.4939"
-         y="28.155188">v3 0x10</tspan></text><path
+         y="28.155188">v2 0x10</tspan></text><path
        style="fill:#000000;stroke:#000000;stroke-width:0.264583"
        d="m 6.4102781,41.938749 c 321.4687419,0 321.9979119,0 321.9979119,0"
        id="path27243" /></g></svg>
