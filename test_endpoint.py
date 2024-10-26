@@ -92,14 +92,24 @@ def lcd_init(ep):
     ep.write(cmd)
 
 
-def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wired mapping
+def data_from_string(num_7segments, string):
+
+    l = num_7segments
+    d = [0] * (l)
+    for i in range(min(l, len(string))):
+        d[l-1-i] = representations[string.upper()[i]]
+    return d
+
+
+def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wired mapping, correct ist here
     # return array with one byte more than lcd chars
 
     l = num_7segments
-    d = [0] * (l + 1)
 
-    for i in range(min(l, len(string))): # heading display has a twisted mapping
-        d[l -1 - i] = representations[string.upper()[i]]
+    d = data_from_string(l, string)
+    d.append(0)
+
+    # fix wired segemnt mapping
     for i in range(len(d)):
         d[i] = swap_nibbles(d[i])
     for i in range(0, len(d) - 1):
@@ -109,11 +119,11 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
     return d
 
 
-
 def lcd_set(ep, speed, heading, alt,vs, new):
-    spd_flag = 0x08
-    hdg1_flag = 0x80
-    lat_flag = 0x20
+    speed_mode_speed_flag = 0x08 # h[3]
+    speed_mode_mach_flag = 0x04 # h[3]
+    lateral_mode_heading_flag = 0x80 # h[0]
+    lateral_mode_lateral_flag = 0x20 # h[0]
 
     h2_dp = 0x10
     hdg2_flag = 0x08 # a[5]
@@ -124,20 +134,17 @@ def lcd_set(ep, speed, heading, alt,vs, new):
 
     spd_managed_flag = 0x02 # h[3]
     hdg_managed_flag = 0x10 # h[0]
+    alt_managed_flag = 0x10 # v[2]
 
     vs_minus_horiz = 0x10 # a[0]
     vs_minus_vert = 0x10 # v[3]
 
-    s = [0,0,0]
-    s_str = str(speed)
-    for i in range(min(3, len(s_str))):
-        s[2 - i] = representations[s_str[i]]
-
+    s = data_from_string( 3, str(speed))
     h = data_from_string_swapped(3, str(heading))
     a = data_from_string_swapped(5, str(alt))
     v = data_from_string_swapped(4, str(vs)) # v[1] includes V/s and FPA instead of 4th segment
     pkg_nr = 1
-    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | spd_flag, h[2], h[1], h[0] | hdg1_flag | lat_flag, a[5], a[4], a[3], a[2], a[1], a[0], v[4], v[3], v[2], v[1], v[0], 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
+    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3], h[2], h[1], h[0], a[5], a[4], a[3], a[2], a[1], a[0], v[4], v[3], v[2], v[1], v[0], 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
     cmd = bytes(data)
     ep.write(cmd)
 
