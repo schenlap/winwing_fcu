@@ -43,6 +43,11 @@ class XPlaneUdp:
     for i in range(len(self.datarefs)):
       self.AddDataRef(next(iter(self.datarefs.values())), freq=0)
     self.socket.close()
+
+  def SendCommand(self,command):
+    message = struct.pack("<4sx500s", b'CMND', command.encode('utf-8'))
+    self.socket.sendto(message, (self.BeaconData["IP"], self.UDP_PORT))
+
   def WriteDataRef(self,dataref,value,vtype='float'):
     '''
     Write Dataref to XPlane
