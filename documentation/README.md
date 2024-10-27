@@ -1,5 +1,12 @@
 # Documentation for developers
 
+## test framework (without x-plane)
+1. Make test_endpoint executable  
+   `chmod +x ./test_endpoint.py`
+2. test connection  
+   `./test_endpoint.py`  
+   AP1 and AP2 led should blink alternately
+
 ## sniff winwing usb protocol
 
 I use Linux as host system and Windows in virt-manager that runs SimApp pro. Wirshark runs in Linux to sniff usb transfer.
