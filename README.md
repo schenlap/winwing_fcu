@@ -23,15 +23,7 @@ It is untested on mac-os, maybe it works.
 4. enjoy flying (and report bugs :-)  )
 
 
-## for developers
-### test framework (without x-plane)
-1. Make test_endpoint executable  
-   `chmod +x ./test_endpoint.py`
-2. test connection  
-   `./test_endpoint.py`  
-   AP1 and AP2 led should blink alternately
-
-### developer documentation
+## developer documentation
 See [documention](./documentation/README.md) for developers
 
 ## Notes
