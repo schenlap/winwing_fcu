@@ -355,6 +355,8 @@ def fcu_create_events(ep_in, ep_out, event):
 def set_button_led(dataref, v):
     for b in buttonlist:
         if b.dataref == dataref:
+            if b.led == None:
+                break
             if v >= 1:
                 v = 200
             print(f'led: {b.led}, value: {v}')
