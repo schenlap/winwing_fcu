@@ -230,34 +230,21 @@ datacache = {}
 
 # List of datarefs to request. 
 datarefs = [
-    # ( dataref, unit, description, num decimals to display in formatted output )
-    #("sim/flightmodel/position/latitude","°N","The latitude of the aircraft",6),
-    #("sim/flightmodel/position/longitude","°E","The longitude of the aircraft",6),
-    #("sim/flightmodel/misc/h_ind", "ft", "",0),
-    #("sim/flightmodel/position/y_agl","m", "AGL", 0), 
-    #("sim/flightmodel/position/mag_psi", "°", "The real magnetic heading of the aircraft",0),
-    #("sim/flightmodel/position/indicated_airspeed", "kt", "Air speed indicated - this takes into account air density and wind direction",0), 
-    #("sim/flightmodel/position/groundspeed","m/s", "The ground speed of the aircraft",0),
-    #("sim/flightmodel/position/vh_ind", "m/s", "vertical velocity",1),
-    ("AirbusFBW/HDGdashed","-", "heading dashed", 2),
-    ("AirbusFBW/SPDdashed","-", "speed dashed", 2),
-    ("AirbusFBW/VSdashed","-", "vs dashed", 2),
-    ("sim/cockpit/autopilot/airspeed", "-", "speed value", 2),
-    ("sim/cockpit2/autopilot/airspeed_dial_kts_mach", "-", "kts mach dial", 2),
-    ("AirbusFBW/SPDmanaged", "-", "spd dot ???", 2),
-    ("sim/cockpit/autopilot/airspeed_is_mach", "-", "set speed label", 2),
-    ("sim/cockpit/autopilot/heading_mag", "-", "Heading", 2),
-    ("AirbusFBW/HDGmanaged", "SET", "Set Hdg managed", 2),
-    ("AirbusFBW/HDGTRKmode", "-", "HDG/TRK toggle", 2),
-    ("sim/cockpit/autopilot/altitude", "-", "ALT", 2),
-    ("AirbusFBW/ALTmanaged", "SET", "Set alt magaged", 2),
-    ("sim/cockpit/autopilot/vertical_velocity", "-", "vs speed", 2),
-    ("sim/cockpit2/autopilot/fpa", "??", "fpa ???", 2),
-    ("AirbusFBW/HDGTRKmode", "-", "V/FPA Mode", 2),
-    ("AirbusFBW/AP1Engage", "-", "AP1 Engaged", 2),
-    ("AirbusFBW/AP2Engage", "-", "AP2 Engaged", 2)
-
-
+    ("AirbusFBW/HDGdashed", 2),
+    ("AirbusFBW/SPDdashed", 2),
+    ("AirbusFBW/VSdashed", 2),
+    ("sim/cockpit/autopilot/airspeed", 2),
+    ("sim/cockpit2/autopilot/airspeed_dial_kts_mach", 2),
+    ("AirbusFBW/SPDmanaged", 2),
+    ("sim/cockpit/autopilot/airspeed_is_mach", 2),
+    ("sim/cockpit/autopilot/heading_mag", 2),
+    ("AirbusFBW/HDGmanaged", 2),
+    ("AirbusFBW/HDGTRKmode", 2),
+    ("sim/cockpit/autopilot/altitude", 2),
+    ("AirbusFBW/ALTmanaged", 2),
+    ("sim/cockpit/autopilot/vertical_velocity", 2),
+    ("sim/cockpit2/autopilot/fpa", 2),
+    ("AirbusFBW/HDGTRKmode", 2)
   ]
 
 
@@ -308,7 +295,12 @@ def RequestDataRefs(xp):
             continue
         datacache[b.dataref] = None
         if b.dreftype != DREF_TYPE.CMD and b.led != None:
+            print(f"register dataref {b.dataref}")
             xp.AddDataRef(b.dataref, 3)
+    for d in datarefs:
+        print(f"register dataref {d[0]}")
+        datacache[d[0]] = None
+        xp.AddDataRef(d[0], d[1])
 
 
 def xor_bitmask(a, b, bitmask):
