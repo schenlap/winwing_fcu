@@ -143,7 +143,7 @@ flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
               ("mach", Flag('spd-mach_mach', Byte.H3, 0x04)),
               ("hdg", Flag('hdg-trk-lat_hdg', Byte.H0, 0x80)),
               ("trk", Flag('hdg-trk-lat_trk', Byte.H0, 0x40)),
-              ("lat", Flag('hdg-trk-lat_lat', Byte.H0, 0x20)),
+              ("lat", Flag('hdg-trk-lat_lat', Byte.H0, 0x20, True)),
               ("vshdg", Flag('hdg-v/s_hdg', Byte.A5, 0x08)),
               ("vs", Flag('hdg-v/s_v/s', Byte.A5, 0x04)),
               ("ftrk", Flag('trk-fpa_trk', Byte.A5, 0x02)),
@@ -152,7 +152,7 @@ flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
               ("hdg_managed", Flag('hdg managed', Byte.H0, 0x10)),
               ("spd_managed", Flag('spd managed', Byte.H3, 0x02)),
               ("alt_managed", Flag('alt_managed', Byte.V1, 0x10)),
-              ("vs_horz", Flag('v/s plus horizontal', Byte.A0, 0x10)),
+              ("vs_horz", Flag('v/s plus horizontal', Byte.A0, 0x10, True)),
               ("vs_vert", Flag('v/s plus vertical', Byte.V2, 0x10)),
               ("lvl", Flag('lvl change', Byte.A2, 0x10, True)),
               ("lvl_left", Flag('lvl change left', Byte.A3, 0x10, True)),
@@ -204,12 +204,17 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
 
     return d
 
+def string_fix_length(v, l):
+    s = str(v)
+    return s.rjust(l, '0')
+
 
 def winwing_fcu_set_lcd(ep, speed, heading, alt, vs):
-    s = data_from_string( 3, str(speed))
-    h = data_from_string_swapped(3, str(heading))
-    a = data_from_string_swapped(5, str(alt))
-    v = data_from_string_swapped(4, str(vs))
+    global usb_retry
+    s = data_from_string( 3, string_fix_length(speed, 3))
+    h = data_from_string_swapped(3, string_fix_length(heading, 3))
+    a = data_from_string_swapped(5, string_fix_length(alt, 5))
+    v = data_from_string_swapped(4, string_fix_length(vs, 4))
 
     bl = [0] * len(Byte)
     for f in flags:
@@ -234,15 +239,15 @@ datarefs = [
     ("AirbusFBW/SPDdashed", 2),
     ("AirbusFBW/VSdashed", 2),
     ("sim/cockpit/autopilot/airspeed", 2),
-    ("sim/cockpit2/autopilot/airspeed_dial_kts_mach", 2),
+    ("sim/cockpit2/autopilot/airspeed_dial_kts_mach", 5),
     ("AirbusFBW/SPDmanaged", 2),
     ("sim/cockpit/autopilot/airspeed_is_mach", 2),
-    ("sim/cockpit/autopilot/heading_mag", 2),
+    ("sim/cockpit/autopilot/heading_mag", 5),
     ("AirbusFBW/HDGmanaged", 2),
     ("AirbusFBW/HDGTRKmode", 2),
-    ("sim/cockpit/autopilot/altitude", 2),
+    ("sim/cockpit/autopilot/altitude", 5),
     ("AirbusFBW/ALTmanaged", 2),
-    ("sim/cockpit/autopilot/vertical_velocity", 2),
+    ("sim/cockpit/autopilot/vertical_velocity", 5),
     ("sim/cockpit2/autopilot/fpa", 2)
   ]
 
@@ -365,10 +370,8 @@ def fcu_create_events(ep_in, ep_out, event):
 
 
 def set_button_led_lcd(dataref, v):
-    handled = False
     for b in buttonlist:
         if b.dataref == dataref:
-            handled = True
             if b.led == None:
                 break
             if v >= 1:
@@ -376,9 +379,6 @@ def set_button_led_lcd(dataref, v):
             print(f'led: {b.led}, value: {v}')
             winwing_fcu_set_led(fcu_out_endpoint, b.led, int(v))
             break
-    if handled == False: # it is for lcd display
-        print(f"lcd value changed")
-        #winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
 
 
 def set_datacache(values):
@@ -394,17 +394,23 @@ def set_datacache(values):
             print(f'cache: v:{v} val:{int(values[v])}')
             datacache[v] = int(values[v])
             set_button_led_lcd(v, int(values[v]))
-    if new == True:
+    if new == True or usb_retry == True:
         speed = datacache['sim/cockpit2/autopilot/airspeed_dial_kts_mach']
         heading = datacache['sim/cockpit/autopilot/heading_mag']
         alt = datacache['sim/cockpit/autopilot/altitude']
         vs = datacache['sim/cockpit/autopilot/vertical_velocity']
+        if vs <= 0:
+            vs = abs(vs)
+            flags['vs_vert'].value = False
+        else:
+            flags['vs_vert'].value = True
         if datacache['AirbusFBW/SPDdashed']:
             speed = '---'
         if datacache['AirbusFBW/HDGdashed']:
             heading = '---'
         if datacache['AirbusFBW/VSdashed']:
             vs = '----'
+            flags['vs_vert'].value = False
         flags['spd_managed'].value = not not datacache['AirbusFBW/SPDmanaged']
         flags['hdg_managed'].value = not not datacache['AirbusFBW/HDGmanaged']
         flags['alt_managed'].value = not not datacache['AirbusFBW/ALTmanaged']
@@ -421,7 +427,7 @@ def set_datacache(values):
         flags['ffpa'].value = not not hdg
         flags['ffpa2'].value = not not hdg
 
-        print(f"now set lcd")
+        #print(f"now set lcd")
         winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
 
 
