@@ -45,11 +45,18 @@ class Leds(Enum):
     EXPED_YELLOW = 30 # 0 .. 255
 
 
+class DREF_TYPE(Enum):
+    DATA = 0
+    CMD = 1
+    NONE = 2 # for testing
+
+
 class Button:
-    def __init__(self, nr, label, dataref = None, button_type = BUTTON.NONE, led = None):
+    def __init__(self, nr, label, dataref = None, dreftype = DREF_TYPE.DATA, button_type = BUTTON.NONE, led = None):
         self.id = nr
         self.label = label
         self.dataref = dataref
+        self.dreftype = dreftype
         #self.data = None
         self.type = button_type
         self.led = led
@@ -262,15 +269,15 @@ xp = None
 
 
 def create_button_list_fcu():
-    buttonlist.append(Button(0, "MACH"))
-    buttonlist.append(Button(1, "LOC"))
+    buttonlist.append(Button(0, "MACH", "toliss_airbus/ias_mach_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(1, "LOC", "AirbusFBW/LOCbutton", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.LOC_GREEN))
     buttonlist.append(Button(2, "TRK"))
-    buttonlist.append(Button(3, "AP1", "AirbusFBW/AP1Engage", BUTTON.TOGGLE, Leds.AP1_GREEN))
-    buttonlist.append(Button(4, "AP2", "AirbusFBW/AP2Engage", BUTTON.TOGGLE, Leds.AP2_GREEN))
-    buttonlist.append(Button(5, "A/THR"))
+    buttonlist.append(Button(3, "AP1", "AirbusFBW/AP1Engage", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.AP1_GREEN))
+    buttonlist.append(Button(4, "AP2", "AirbusFBW/AP2Engage", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.AP2_GREEN))
+    buttonlist.append(Button(5, "A/THR", "AirbusFBW/ATHRmode", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.ATHR_GREEN))
     buttonlist.append(Button(6, "EXPED"))
     buttonlist.append(Button(7, "METRIC"))
-    buttonlist.append(Button(8, "APPR"))
+    buttonlist.append(Button(8, "APPR", "AirbusFBW/APPRilluminated", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.APPR_GREEN))
     buttonlist.append(Button(9, "SPD DEC"))
     buttonlist.append(Button(10, "SPD INC"))
     buttonlist.append(Button(11, "SPD PUSH"))
@@ -314,11 +321,20 @@ def fcu_button_event():
             if b.type == BUTTON.TOGGLE:
                 val = datacache[b.dataref]
                 print(f'set dataref {b.dataref} from {bool(val)} to {not bool(val)}')
-                xp.WriteDataRef(b.dataref, not bool(val))
+                if b.dreftype== DREF_TYPE.DATA:
+                    print(f'set dataref {b.dataref} from {bool(val)} to {not bool(val)}')
+                    xp.WriteDataRef(b.dataref, not bool(val))
+                elif b.dreftype== DREF_TYPE.CMD:
+                    print(f'send command {b.dataref}')
+                    xp.SendCommand(b.dataref)
             elif b.type == BUTTON.SWITCH:
                 val = datacache[b.dataref]
-                print(f'set dataref {b.dataref} to 1')
-                xp.WriteDataRef(b.dataref, 1)
+                if b.dreftype== DREF_TYPE.DATA:
+                    print(f'set dataref {b.dataref} to 1')
+                    xp.WriteDataRef(b.dataref, 1)
+                elif b.dreftype== DREF_TYPE.CMD:
+                    print(f'send command {b.dataref}')
+                    xp.SendCommand(b.dataref)
             else:
                 print(f'no datafref set for pressed button {b.label}')
         if buttons_release_event[b.id]:
