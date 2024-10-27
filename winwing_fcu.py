@@ -299,14 +299,13 @@ def create_button_list_fcu():
     buttonlist.append(Button(24, "VS PULL", "AirbusFBW/PullVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(25, "ALT 100", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_ZERO))
     buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_ONE))
-    buttonlist.append(Button(27, "FD"))
+    buttonlist.append(Button(27, "BRIGHT", "AirbusFBW/SupplLightLevelRehostats[0]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT))
+    buttonlist.append(Button(27, "BRIGHT_LCD", "AirbusFBW/SupplLightLevelRehostats[1]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT))
     buttonlist.append(Button(28, "RES"))
 
 
 def RequestDataRefs(xp):
     for idx,b in enumerate(buttonlist):
-        if b.type == BUTTON.NONE:
-            continue
         datacache[b.dataref] = None
         if b.dreftype != DREF_TYPE.CMD and b.led != None:
             print(f"register dataref {b.dataref}")
@@ -391,10 +390,12 @@ def set_button_led_lcd(dataref, v):
         if b.dataref == dataref:
             if b.led == None:
                 break
-            if v >= 1:
-                v = 1
+            if v >= 255:
+                v = 255
             print(f'led: {b.led}, value: {v}')
             winwing_fcu_set_led(fcu_out_endpoint, b.led, int(v))
+            if b.led == Leds.BACKLIGHT:
+                winwing_fcu_set_led(fcu_out_endpoint, Leds.EXPED_YELLOW, int(v))
             break
 
 
@@ -403,9 +404,12 @@ def set_datacache(values):
     new = False
     for v in values:
         #print(f'cache: v:{v} val:{values[v]}')
-        #if v == 'sim/cockpit/autopilot/heading_mag':
-            # heading is in float, we want int
-         #   values[v] = int(values[v])
+        if v == 'AirbusFBW/SupplLightLevelRehostats[0]' and values[v] <= 1:
+            # brightness is in 0..1, we need 0..255
+            values[v] = int(values[v] * 255)
+        if v == 'AirbusFBW/SupplLightLevelRehostats[1]' and values[v] <= 1:
+            # brightness is in 0..1, we need 0..255
+            values[v] = int(values[v] * 235 + 20)
         if datacache[v] != int(values[v]):
             new = True
             print(f'cache: v:{v} val:{int(values[v])}')
