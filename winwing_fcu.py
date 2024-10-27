@@ -113,6 +113,7 @@ representations = {
     'Y' : 0x7c,
     'Z' : 0xd6,
     '-' : 0x04,
+    '#' : 0x36,
 }
 
 class Byte(Enum):
@@ -420,11 +421,13 @@ def set_datacache(values):
         heading = datacache['sim/cockpit/autopilot/heading_mag']
         alt = datacache['sim/cockpit/autopilot/altitude']
         vs = datacache['sim/cockpit/autopilot/vertical_velocity']
-        if vs <= 0:
+        hdg = datacache['AirbusFBW/HDGTRKmode']
+        if vs < 0:
             vs = abs(vs)
             flags['vs_vert'].value = False
         else:
             flags['vs_vert'].value = True
+
         if datacache['AirbusFBW/SPDdashed']:
             speed = '---'
         if datacache['AirbusFBW/HDGdashed']:
@@ -432,13 +435,19 @@ def set_datacache(values):
         if datacache['AirbusFBW/VSdashed']:
             vs = '----'
             flags['vs_vert'].value = False
+        elif not hdg:
+            # small 0 for hundred-feed chars in v/s mode
+            vs = string_fix_length(int(vs/100), 2)
+            vs = vs.ljust(4, '#')
+            print(f"vs: {v}")
+        else:
+            vs = int(vs / 100)
         flags['spd_managed'].value = not not datacache['AirbusFBW/SPDmanaged']
         flags['hdg_managed'].value = not not datacache['AirbusFBW/HDGmanaged']
         flags['alt_managed'].value = not not datacache['AirbusFBW/ALTmanaged']
         spd_mach = datacache['sim/cockpit/autopilot/airspeed_is_mach']
         flags['spd'].value = not spd_mach
         flags['mach'].value = not not spd_mach
-        hdg = datacache['AirbusFBW/HDGTRKmode']
         flags['hdg'].value = not hdg
         flags['trk'].value = not not hdg
         flags['fvs'].value = not hdg
