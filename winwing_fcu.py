@@ -148,15 +148,15 @@ flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
               ("vs", Flag('hdg-v/s_v/s', Byte.A5, 0x04)),
               ("ftrk", Flag('trk-fpa_trk', Byte.A5, 0x02)),
               ("ffpa", Flag('trk-fpa_fpa', Byte.A5, 0x01)),
-              ("alt", Flag('alt', Byte.A4, 0x10)),
+              ("alt", Flag('alt', Byte.A4, 0x10, True)),
               ("hdg_managed", Flag('hdg managed', Byte.H0, 0x10)),
               ("spd_managed", Flag('spd managed', Byte.H3, 0x02)),
               ("alt_managed", Flag('alt_managed', Byte.V1, 0x10)),
               ("vs_horz", Flag('v/s plus horizontal', Byte.A0, 0x10)),
               ("vs_vert", Flag('v/s plus vertical', Byte.V2, 0x10)),
-              ("lvl", Flag('lvl change', Byte.A2, 0x10)),
-              ("lvl_left", Flag('lvl change left', Byte.A3, 0x10)),
-              ("lvl_right", Flag('lvl change right', Byte.A1, 0x10)),
+              ("lvl", Flag('lvl change', Byte.A2, 0x10, True)),
+              ("lvl_left", Flag('lvl change left', Byte.A3, 0x10, True)),
+              ("lvl_right", Flag('lvl change right', Byte.A1, 0x10, True)),
               ("fvs", Flag('v/s-fpa_v/s', Byte.V0, 0x40)),
               ("ffpa2", Flag('v/s-fpa_fpa', Byte.V0, 0x80)),
               ])
@@ -205,7 +205,7 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
     return d
 
 
-def winwing_fcu_lcd_set(ep, speed, heading, alt,vs, new):
+def winwing_fcu_set_lcd(ep, speed, heading, alt, vs):
     s = data_from_string( 3, str(speed))
     h = data_from_string_swapped(3, str(heading))
     a = data_from_string_swapped(5, str(alt))
@@ -243,8 +243,7 @@ datarefs = [
     ("sim/cockpit/autopilot/altitude", 2),
     ("AirbusFBW/ALTmanaged", 2),
     ("sim/cockpit/autopilot/vertical_velocity", 2),
-    ("sim/cockpit2/autopilot/fpa", 2),
-    ("AirbusFBW/HDGTRKmode", 2)
+    ("sim/cockpit2/autopilot/fpa", 2)
   ]
 
 
@@ -365,27 +364,65 @@ def fcu_create_events(ep_in, ep_out, event):
             buttons_last = buttons
 
 
-def set_button_led(dataref, v):
+def set_button_led_lcd(dataref, v):
+    handled = False
     for b in buttonlist:
         if b.dataref == dataref:
+            handled = True
             if b.led == None:
                 break
             if v >= 1:
-                v = 200
+                v = 1
             print(f'led: {b.led}, value: {v}')
             winwing_fcu_set_led(fcu_out_endpoint, b.led, int(v))
             break
-        else:
-            continue
+    if handled == False: # it is for lcd display
+        print(f"lcd value changed")
+        #winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
 
 
 def set_datacache(values):
     global datacache
+    new = False
     for v in values:
         #print(f'cache: v:{v} val:{values[v]}')
-        if datacache[v] != values[v]:
-            datacache[v] = values[v]
-            set_button_led(v, values[v])
+        #if v == 'sim/cockpit/autopilot/heading_mag':
+            # heading is in float, we want int
+         #   values[v] = int(values[v])
+        if datacache[v] != int(values[v]):
+            new = True
+            print(f'cache: v:{v} val:{int(values[v])}')
+            datacache[v] = int(values[v])
+            set_button_led_lcd(v, int(values[v]))
+    if new == True:
+        speed = datacache['sim/cockpit2/autopilot/airspeed_dial_kts_mach']
+        heading = datacache['sim/cockpit/autopilot/heading_mag']
+        alt = datacache['sim/cockpit/autopilot/altitude']
+        vs = datacache['sim/cockpit/autopilot/vertical_velocity']
+        if datacache['AirbusFBW/SPDdashed']:
+            speed = '---'
+        if datacache['AirbusFBW/HDGdashed']:
+            heading = '---'
+        if datacache['AirbusFBW/VSdashed']:
+            vs = '----'
+        flags['spd_managed'].value = not not datacache['AirbusFBW/SPDmanaged']
+        flags['hdg_managed'].value = not not datacache['AirbusFBW/HDGmanaged']
+        flags['alt_managed'].value = not not datacache['AirbusFBW/ALTmanaged']
+        spd_mach = datacache['sim/cockpit/autopilot/airspeed_is_mach']
+        flags['spd'].value = not spd_mach
+        flags['mach'].value = not not spd_mach
+        hdg = datacache['AirbusFBW/HDGTRKmode']
+        flags['hdg'].value = not hdg
+        flags['trk'].value = not not hdg
+        flags['fvs'].value = not hdg
+        flags['vshdg'].value = not hdg
+        flags['vs'].value = not hdg
+        flags['ftrk'].value = not not hdg
+        flags['ffpa'].value = not not hdg
+        flags['ffpa2'].value = not not hdg
+
+        print(f"now set lcd")
+        winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
 
 
 def main():
