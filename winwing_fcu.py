@@ -29,7 +29,9 @@ BUTTONS_CNT = 32
 class BUTTON(Enum):
     SWITCH = 0
     TOGGLE = 1
-    NONE = 2 # for testing
+    SEND_ZERO = 2
+    SEND_ONE = 3
+    NONE = 4 # for testing
 
 
 class Leds(Enum):
@@ -294,8 +296,8 @@ def create_button_list_fcu():
     buttonlist.append(Button(22, "VS INC", "sim/autopilot/vertical_speed_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(23, "VS PUSH", "AirbusFBW/PushVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(24, "VS PULL", "AirbusFBW/PullVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(25, "ALT 100", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.TOGGLE)) # TODO send 0
-    buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.TOGGLE)) # todo send 1
+    buttonlist.append(Button(25, "ALT 100", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_ZERO))
+    buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_ONE))
     buttonlist.append(Button(27, "FD"))
     buttonlist.append(Button(28, "RES"))
 
@@ -335,8 +337,16 @@ def fcu_button_event():
                 elif b.dreftype== DREF_TYPE.CMD:
                     print(f'send command {b.dataref}')
                     xp.SendCommand(b.dataref)
+            elif b.type == BUTTON.SEND_ZERO:
+                if b.dreftype== DREF_TYPE.DATA:
+                    print(f'set dataref {b.dataref} to 0')
+                    xp.WriteDataRef(b.dataref, 0)
+            elif b.type == BUTTON.SEND_ONE:
+                if b.dreftype== DREF_TYPE.DATA:
+                    print(f'set dataref {b.dataref} to 1')
+                    xp.WriteDataRef(b.dataref, 1)
             else:
-                print(f'no datafref set for pressed button {b.label}')
+                print(f'no known button type for button {b.label}')
         if buttons_release_event[b.id]:
             buttons_release_event[b.id] = 0
             print(f'button {b.label} released')
