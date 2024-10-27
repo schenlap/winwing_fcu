@@ -223,11 +223,19 @@ def winwing_fcu_set_lcd(ep, speed, heading, alt, vs):
     pkg_nr = 1
     data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | bl[Byte.H3.value], h[2], h[1], h[0] | bl[Byte.H0.value], a[5] | bl[Byte.A5.value], a[4] | bl[Byte.A4.value], a[3] | bl[Byte.A3.value], a[2] | bl[Byte.A2.value], a[1] | bl[Byte.A1.value], a[0] | v[4] | bl[Byte.A0.value], v[3] | bl[Byte.V3.value], v[2] | bl[Byte.V2.value], v[1] | bl[Byte.V1.value], v[0] | bl[Byte.V0.value], 0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
     cmd = bytes(data)
-    ep.write(cmd)
+    try:
+        ep.write(cmd)
+    except:
+        usb_retry = True
 
     data = [0xf0, 0x0, pkg_nr, 0x11, 0x10, 0xbb, 0x0, 0x0, 0x3, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
     cmd = bytes(data)
-    ep.write(cmd)
+    try:
+        ep.write(cmd)
+        usb_retry = False
+    except:
+        usb_retry = True
+
 
 fcu_device = None # usb /dev/inputx device
 
@@ -257,6 +265,8 @@ buttons_release_event = [0] * BUTTONS_CNT
 
 fcu_out_endpoint = None
 fcu_in_endpoint = None
+
+usb_retry = False
 
 xp = None
 
@@ -316,7 +326,7 @@ def fcu_button_event():
     for b in buttonlist:
         if buttons_press_event[b.id]:
             buttons_press_event[b.id] = 0
-            print(f'button {b.label} pressed')
+            #print(f'button {b.label} pressed')
             if b.type == BUTTON.TOGGLE:
                 val = datacache[b.dataref]
                 if b.dreftype== DREF_TYPE.DATA:
@@ -353,13 +363,20 @@ def fcu_button_event():
 def fcu_create_events(ep_in, ep_out, event):
         buttons_last = 0
         while True:
-            sleep(0.02  )
-            data_in = ep_in.read(0x81, 7)
+            sleep(0.02)
+            try:
+                data_in = ep_in.read(0x81, 7)
+            except:
+                print(f' *** continue after usb-in error ***')
+                continue
+            if len(data_in) != 41:
+                print(f'rx data count {len(data_in)} not valid')
+                continue
             buttons=data_in[1] | (data_in[2] << 8) | (data_in[3] << 16) | (data_in[4] << 24)
             for i in range (32):
                 mask = 0x01 << i
                 if xor_bitmask(buttons, buttons_last, mask):
-                    #print(f"buttons: {format(buttons, "#04x"):^14}")
+                    print(f"buttons: {format(buttons, "#04x"):^14}")
                     if buttons & mask:
                         buttons_press_event[i] = 1
                     else:
