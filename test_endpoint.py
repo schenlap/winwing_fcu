@@ -19,12 +19,6 @@ class Leds(Enum):
     FLAG_GREEN = 17 # 0 .. 255
     EXPED_YELLOW = 30 # 0 .. 255
 
-class Lcd(Enum):
-    ALL_ON = 2
-    ALL_OFF = 6
-    HALF_LCD_ON1 = 7
-    HALF_LCD_ON2 = 9
-
 #      A
 #      ---
 #   F | G | B

@@ -23,12 +23,13 @@ import usb.util
 
 import XPlaneUdp
 
-BUTTONS_CNT = 29
+BUTTONS_CNT = 32
 
 
 class BUTTON(Enum):
     SWITCH = 0
     TOGGLE = 1
+    NONE = 2 # for testing
 
 
 class Leds(Enum):
@@ -45,7 +46,7 @@ class Leds(Enum):
 
 
 class Button:
-    def __init__(self, nr, label, dataref, button_type = BUTTON.SWITCH, led = None):
+    def __init__(self, nr, label, dataref = None, button_type = BUTTON.NONE, led = None):
         self.id = nr
         self.label = label
         self.dataref = dataref
@@ -260,17 +261,12 @@ fcu_in_endpoint = None
 xp = None
 
 
-def create_button_list():
-    buttonlist.append(Button(0, "AP2", "AirbusFBW/AP2Engage", BUTTON.TOGGLE, Leds.RIGHT))
-    buttonlist.append(Button(1, "AP1", "AirbusFBW/AP1Engage", BUTTON.TOGGLE, Leds.LEFT))
-
-
 def create_button_list_fcu():
     buttonlist.append(Button(0, "MACH"))
     buttonlist.append(Button(1, "LOC"))
     buttonlist.append(Button(2, "TRK"))
-    buttonlist.append(Button(3, "AP1"))
-    buttonlist.append(Button(4, "AP2"))
+    buttonlist.append(Button(3, "AP1", "AirbusFBW/AP1Engage", BUTTON.TOGGLE, Leds.AP1_GREEN))
+    buttonlist.append(Button(4, "AP2", "AirbusFBW/AP2Engage", BUTTON.TOGGLE, Leds.AP2_GREEN))
     buttonlist.append(Button(5, "A/THR"))
     buttonlist.append(Button(6, "EXPED"))
     buttonlist.append(Button(7, "METRIC"))
@@ -298,40 +294,11 @@ def create_button_list_fcu():
 
 
 def RequestDataRefs(xp):
-  for idx,b in enumerate(buttonlist):
-    datacache[b.dataref] = None
-    xp.AddDataRef(b.dataref, 3)
-
-
-def print_usb_device():
-    device_re = re.compile(b"Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
-    df = subprocess.check_output("lsusb")
-    devices = []
-    for i in df.split(b'\n'):
-        if i:
-            info = device_re.match(i)
-            if info:
-                dinfo = info.groupdict()
-                dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
-                devices.append(dinfo)
-
-    print(*devices, sep="\n")
-
-
-def get_usb_fcu_device():
-    dev_list = evdev.list_devices()
-
-    fcu_device = None
-    for device in dev_list:
-        d = evdev.InputDevice(device)
-        print(d.name)
-        if d.name == 'Winwing WINWING SKYWALKER Metal Rudder Pedals':
-            print(f'found {d.name}')
-            print(d.capabilities(verbose=True))
-            d.close()
-            return device
-        d.close()
-    return None
+    for idx,b in enumerate(buttonlist):
+        if b.type == BUTTON.NONE:
+            continue
+        datacache[b.dataref] = None
+        xp.AddDataRef(b.dataref, 3)
 
 
 def xor_bitmask(a, b, bitmask):
@@ -339,17 +306,21 @@ def xor_bitmask(a, b, bitmask):
 
 
 def fcu_button_event():
-    print(f'evets: press: {buttons_press_event}, release: {buttons_release_event}')
+    print(f'events: press: {buttons_press_event}, release: {buttons_release_event}')
     for b in buttonlist:
         if buttons_press_event[b.id]:
             buttons_press_event[b.id] = 0
             print(f'button {b.label} pressed')
-            val = datacache[b.dataref]
-            print(f'set dataref {b.dataref} from {bool(val)} to {not bool(val)}')
             if b.type == BUTTON.TOGGLE:
+                val = datacache[b.dataref]
+                print(f'set dataref {b.dataref} from {bool(val)} to {not bool(val)}')
                 xp.WriteDataRef(b.dataref, not bool(val))
-            else:
+            elif b.type == BUTTON.SWITCH:
+                val = datacache[b.dataref]
+                print(f'set dataref {b.dataref} to 1')
                 xp.WriteDataRef(b.dataref, 1)
+            else:
+                print(f'no datafref set for pressed button {b.label}')
         if buttons_release_event[b.id]:
             buttons_release_event[b.id] = 0
             print(f'button {b.label} released')
@@ -363,10 +334,12 @@ def fcu_create_events(ep_in, ep_out, event):
             sleep(0.1)
             data_in = ep_in.read(0x81, 7)
             #print(f'usb ep data in: {data_in}')
-            buttons=data_in[1]
-            for i in range (3):
+            buttons=data_in[1] | (data_in[2] << 8) | (data_in[3] << 16) | (data_in[4] << 24)
+            #print(f"buttons: {format(buttons, "#04x"):^14}")
+            for i in range (32):
                 mask = 0x01 << i
                 if xor_bitmask(buttons, buttons_last, mask):
+                    print(f"buttons: {format(buttons, "#04x"):^14}")
                     if buttons & mask:
                         buttons_press_event[i] = 1
                         #fcu_set_led(ep_out, Leds.LOGO, 255)
@@ -404,8 +377,7 @@ def main():
     global xp
     global fcu_in_endpoint, fcu_out_endpoint
 
-    create_button_list()
-    #print_usb_device()
+    create_button_list_fcu()
 
     device = usb.core.find(idVendor=0x4098, idProduct=0xbb10)
     if device is None:
