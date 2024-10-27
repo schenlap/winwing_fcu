@@ -305,7 +305,8 @@ def RequestDataRefs(xp):
         if b.type == BUTTON.NONE:
             continue
         datacache[b.dataref] = None
-        xp.AddDataRef(b.dataref, 3)
+        if b.dreftype != DREF_TYPE.CMD and b.led != None:
+            xp.AddDataRef(b.dataref, 3)
 
 
 def xor_bitmask(a, b, bitmask):
