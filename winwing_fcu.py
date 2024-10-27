@@ -271,31 +271,31 @@ xp = None
 def create_button_list_fcu():
     buttonlist.append(Button(0, "MACH", "toliss_airbus/ias_mach_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(1, "LOC", "AirbusFBW/LOCbutton", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.LOC_GREEN))
-    buttonlist.append(Button(2, "TRK"))
+    buttonlist.append(Button(2, "TRK", "toliss_airbus/hdgtrk_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(3, "AP1", "AirbusFBW/AP1Engage", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.AP1_GREEN))
     buttonlist.append(Button(4, "AP2", "AirbusFBW/AP2Engage", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.AP2_GREEN))
     buttonlist.append(Button(5, "A/THR", "AirbusFBW/ATHRmode", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.ATHR_GREEN))
-    buttonlist.append(Button(6, "EXPED"))
-    buttonlist.append(Button(7, "METRIC"))
-    buttonlist.append(Button(8, "APPR", "AirbusFBW/APPRilluminated", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.APPR_GREEN))
-    buttonlist.append(Button(9, "SPD DEC"))
-    buttonlist.append(Button(10, "SPD INC"))
-    buttonlist.append(Button(11, "SPD PUSH"))
-    buttonlist.append(Button(12, "SPD PULL"))
-    buttonlist.append(Button(13, "HDG DEC"))
-    buttonlist.append(Button(14, "HDG INC"))
-    buttonlist.append(Button(15, "HDG PUSH"))
-    buttonlist.append(Button(16, "HDG PULL"))
-    buttonlist.append(Button(17, "ALT DEC"))
-    buttonlist.append(Button(18, "ALT INC"))
-    buttonlist.append(Button(19, "ALT PUSH"))
-    buttonlist.append(Button(20, "ALT PULL"))
-    buttonlist.append(Button(21, "VS DEC"))
-    buttonlist.append(Button(22, "VS INC"))
-    buttonlist.append(Button(23, "VS PUSH"))
-    buttonlist.append(Button(24, "VS PULL"))
-    buttonlist.append(Button(25, "ALT 100"))
-    buttonlist.append(Button(26, "ALT 1000"))
+    buttonlist.append(Button(6, "EXPED", "AirbusFBW/EXPEDbutton", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(7, "METRIC", "toliss_airbus/metric_alt_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(8, "APPR", "AirbusFBW/APPRbutton", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(9, "SPD DEC", "sim/autopilot/airspeed_down", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(10, "SPD INC", "sim/autopilot/airspeed_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(11, "SPD PUSH", "AirbusFBW/PushSPDSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(12, "SPD PULL", "AirbusFBW/PullSPDSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(13, "HDG DEC", "sim/autopilot/heading_down", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(14, "HDG INC", "sim/autopilot/heading_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(15, "HDG PUSH", "AirbusFBW/PushHDGSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(16, "HDG PULL", "AirbusFBW/PullHDGSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(17, "ALT DEC", "sim/autopilot/altitude_down", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(18, "ALT INC", "sim/autopilot/altitude_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(19, "ALT PUSH", "AirbusFBW/PushAltitude", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(20, "ALT PULL", "AirbusFBW/PullAltitude", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(21, "VS DEC", "sim/autopilot/vertical_speed_down", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(22, "VS INC", "sim/autopilot/vertical_speed_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(23, "VS PUSH", "AirbusFBW/PushVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(24, "VS PULL", "AirbusFBW/PullVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
+    buttonlist.append(Button(25, "ALT 100", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.TOGGLE)) # TODO send 0
+    buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.TOGGLE)) # todo send 1
     buttonlist.append(Button(27, "FD"))
     buttonlist.append(Button(28, "RES"))
 
@@ -313,14 +313,13 @@ def xor_bitmask(a, b, bitmask):
 
 
 def fcu_button_event():
-    print(f'events: press: {buttons_press_event}, release: {buttons_release_event}')
+    #print(f'events: press: {buttons_press_event}, release: {buttons_release_event}')
     for b in buttonlist:
         if buttons_press_event[b.id]:
             buttons_press_event[b.id] = 0
             print(f'button {b.label} pressed')
             if b.type == BUTTON.TOGGLE:
                 val = datacache[b.dataref]
-                print(f'set dataref {b.dataref} from {bool(val)} to {not bool(val)}')
                 if b.dreftype== DREF_TYPE.DATA:
                     print(f'set dataref {b.dataref} from {bool(val)} to {not bool(val)}')
                     xp.WriteDataRef(b.dataref, not bool(val))
@@ -347,25 +346,20 @@ def fcu_button_event():
 def fcu_create_events(ep_in, ep_out, event):
         buttons_last = 0
         while True:
-            sleep(0.1)
+            sleep(0.02  )
             data_in = ep_in.read(0x81, 7)
-            #print(f'usb ep data in: {data_in}')
             buttons=data_in[1] | (data_in[2] << 8) | (data_in[3] << 16) | (data_in[4] << 24)
-            #print(f"buttons: {format(buttons, "#04x"):^14}")
             for i in range (32):
                 mask = 0x01 << i
                 if xor_bitmask(buttons, buttons_last, mask):
-                    print(f"buttons: {format(buttons, "#04x"):^14}")
+                    #print(f"buttons: {format(buttons, "#04x"):^14}")
                     if buttons & mask:
                         buttons_press_event[i] = 1
-                        #fcu_set_led(ep_out, Leds.LOGO, 255)
                     else:
                         buttons_release_event[i] = 1
-                        #fcu_set_led(ep_out, Leds.LOGO, 0)
                     event.set()
                     fcu_button_event()
             buttons_last = buttons
-            #print(f'evets: press: {buttons_press_event}, release: {buttons_release_event}')
 
 
 def set_button_led(dataref, v):
