@@ -9,7 +9,7 @@ Tested with XP12 under linux (debian trixie) and Toliss A319.
 2. copy `udev/71-winwing.rules` to `/etc/udev/rules.d`  
 `sudo cp udev/71-winwing.rules /etc/udev/rules.d/`
 3. install dependencies (on debian based systems)  
-`sudo aptitude install python3-evdev python3-usb`
+`sudo aptitude install python3-usb`
 
 
 #### MAC-OS

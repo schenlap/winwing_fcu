@@ -7,7 +7,6 @@ UDP_PORT = 49000
 import binascii
 from dataclasses import dataclass
 from enum import Enum
-import evdev
 import socket
 import struct
 
