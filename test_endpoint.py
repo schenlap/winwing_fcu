@@ -67,6 +67,10 @@ representations = {
     'Y' : 0x7c,
     'Z' : 0xd6,
     '-' : 0x04,
+    '#' : 0x36,
+    '/' : 0x60,
+    '\\' : 0xa0,
+    ' ' : 0x00,
 }
 
 class Byte(Enum):
@@ -93,25 +97,25 @@ class Flag:
     value : bool = False
 
 
-flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
+flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08, True)),
               ("mach", Flag('spd-mach_mach', Byte.H3, 0x04)),
               ("hdg", Flag('hdg-trk-lat_hdg', Byte.H0, 0x80)),
               ("trk", Flag('hdg-trk-lat_trk', Byte.H0, 0x40)),
-              ("lat", Flag('hdg-trk-lat_lat', Byte.H0, 0x20)),
-              ("vshdg", Flag('hdg-v/s_hdg', Byte.A5, 0x08)),
-              ("vs", Flag('hdg-v/s_v/s', Byte.A5, 0x04)),
+              ("lat", Flag('hdg-trk-lat_lat', Byte.H0, 0x20, True)),
+              ("vshdg", Flag('hdg-v/s_hdg', Byte.A5, 0x08, True)),
+              ("vs", Flag('hdg-v/s_v/s', Byte.A5, 0x04, True)),
               ("ftrk", Flag('trk-fpa_trk', Byte.A5, 0x02)),
               ("ffpa", Flag('trk-fpa_fpa', Byte.A5, 0x01)),
-              ("alt", Flag('alt', Byte.A4, 0x10)),
+              ("alt", Flag('alt', Byte.A4, 0x10, True)),
               ("hdg_managed", Flag('hdg managed', Byte.H0, 0x10)),
               ("spd_managed", Flag('spd managed', Byte.H3, 0x02)),
               ("alt_managed", Flag('alt_managed', Byte.V1, 0x10)),
-              ("vs_horz", Flag('v/s plus horizontal', Byte.A0, 0x10)),
+              ("vs_horz", Flag('v/s plus horizontal', Byte.A0, 0x10, True)),
               ("vs_vert", Flag('v/s plus vertical', Byte.V2, 0x10)),
-              ("lvl", Flag('lvl change', Byte.A2, 0x10)),
-              ("lvl_left", Flag('lvl change left', Byte.A3, 0x10)),
-              ("lvl_right", Flag('lvl change right', Byte.A1, 0x10)),
-              ("fvs", Flag('v/s-fpa_v/s', Byte.V0, 0x40)),
+              ("lvl", Flag('lvl change', Byte.A2, 0x10, True)),
+              ("lvl_left", Flag('lvl change left', Byte.A3, 0x10, True)),
+              ("lvl_right", Flag('lvl change right', Byte.A1, 0x10, True)),
+              ("fvs", Flag('v/s-fpa_v/s', Byte.V0, 0x40, True)),
               ("ffpa2", Flag('v/s-fpa_fpa', Byte.V0, 0x80)),
               ])
 
@@ -137,7 +141,11 @@ def data_from_string(num_7segments, string):
     l = num_7segments
     d = [0] * (l)
     for i in range(min(l, len(string))):
-        d[l-1-i] = representations[string.upper()[i]]
+        r = representations.get(string.upper()[i])
+        if r == None:
+            r = 0xef
+            print("ERROR: char '{string.upper()[i]}' not found")
+        d[l-1-i] = r
     return d
 
 
@@ -195,10 +203,15 @@ lcd_init(endpoint_out)
 
 endpoint_in = endpoints[0]
 print(endpoint_in)
-speed = 100
-heading = 888
+speed = 250
+heading = 180
 alt = 16000
-vs = 8888
+vs = '----'
+
+
+long_str = " A-319schenlap           "
+winwing_fcu_set_led(endpoint_out, Leds.BACKLIGHT, 70)
+winwing_fcu_set_led(endpoint_out, Leds.SCREEN_BACKLIGHT, 200)
 
 while True:
     buf_in = [None] * 7

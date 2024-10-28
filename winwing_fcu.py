@@ -114,6 +114,9 @@ representations = {
     'Z' : 0xd6,
     '-' : 0x04,
     '#' : 0x36,
+    '/' : 0x60,
+    '\\' : 0xa0,
+    ' ' : 0x00,
 }
 
 class Byte(Enum):
