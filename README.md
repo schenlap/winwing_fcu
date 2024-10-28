@@ -22,6 +22,8 @@ It is untested on mac-os, maybe it works.
 3. start script with `../winwing_fcu.py`
 4. enjoy flying (and report bugs :-)  )
 
+![fcu demo image](./fcu_demo.gif)
+
 
 ## developer documentation
 See [documention](./documentation/README.md) for developers
