@@ -1,4 +1,12 @@
- -- Symbols
+-- Wireshark Dissector for Winwing-FCU protocol
+-- Tested with Wireshark 4.4
+--
+-- Place it in ~/.local/lib/wireshark/plugins/
+--
+-- Alternatively start with: wireshark -X lua_script:path/to/wireshark_winwing_dissector.lua
+
+
+-- Symbols
 local IF_CLASS_UNKNOWN          = 0xFFFF
 local HID                       = 0x0003
 
