@@ -64,6 +64,11 @@ class Button:
 
 buttonlist = []
 
+led_brightness = 128
+exped_led_state = False
+
+
+
 #      A
 #      ---
 #   F | G | B
@@ -244,7 +249,7 @@ fcu_device = None # usb /dev/inputx device
 
 datacache = {}
 
-# List of datarefs to request. 
+# List of datarefs without led connection to request.
 datarefs = [
     ("AirbusFBW/HDGdashed", 2),
     ("AirbusFBW/SPDdashed", 2),
@@ -259,7 +264,8 @@ datarefs = [
     ("sim/cockpit/autopilot/altitude", 5),
     ("AirbusFBW/ALTmanaged", 2),
     ("sim/cockpit/autopilot/vertical_velocity", 5),
-    ("sim/cockpit2/autopilot/fpa", 2)
+    ("sim/cockpit2/autopilot/fpa", 2),
+    ("AirbusFBW/APVerticalMode", 5) # EXPED light on for vsmode >= 112
   ]
 
 
@@ -280,7 +286,7 @@ def create_button_list_fcu():
     buttonlist.append(Button(2, "TRK", "toliss_airbus/hdgtrk_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(3, "AP1", "AirbusFBW/AP1Engage", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.AP1_GREEN))
     buttonlist.append(Button(4, "AP2", "AirbusFBW/AP2Engage", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.AP2_GREEN))
-    buttonlist.append(Button(5, "A/THR", "AirbusFBW/ATHRmode", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.ATHR_GREEN))
+    buttonlist.append(Button(5, "A/THR", "AirbusFBW/ATHRbutton", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(6, "EXPED", "AirbusFBW/EXPEDbutton", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(7, "METRIC", "toliss_airbus/metric_alt_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(8, "APPR", "AirbusFBW/APPRbutton", DREF_TYPE.CMD, BUTTON.TOGGLE))
@@ -304,7 +310,8 @@ def create_button_list_fcu():
     buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_ONE))
     buttonlist.append(Button(27, "BRIGHT", "AirbusFBW/SupplLightLevelRehostats[0]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT))
     buttonlist.append(Button(27, "BRIGHT_LCD", "AirbusFBW/SupplLightLevelRehostats[1]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT))
-    buttonlist.append(Button(28, "RES"))
+    buttonlist.append(Button(28, "APPR_LED", "AirbusFBW/APPRilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.APPR_GREEN))
+    buttonlist.append(Button(29, "ATHR_LED", "AirbusFBW/ATHRmode", DREF_TYPE.DATA, BUTTON.NONE, Leds.ATHR_GREEN))
 
 
 def RequestDataRefs(xp):
@@ -389,6 +396,7 @@ def fcu_create_events(ep_in, ep_out, event):
 
 
 def set_button_led_lcd(dataref, v):
+    global led_brightness
     for b in buttonlist:
         if b.dataref == dataref:
             if b.led == None:
@@ -396,14 +404,19 @@ def set_button_led_lcd(dataref, v):
             if v >= 255:
                 v = 255
             print(f'led: {b.led}, value: {v}')
+
             winwing_fcu_set_led(fcu_out_endpoint, b.led, int(v))
             if b.led == Leds.BACKLIGHT:
                 winwing_fcu_set_led(fcu_out_endpoint, Leds.EXPED_YELLOW, int(v))
+                print(f'set led brigthness: {b.led}, value: {v}')
+                led_brightness = v
             break
 
 
 def set_datacache(values):
     global datacache
+    global exped_led_state
+
     new = False
     for v in values:
         #print(f'cache: v:{v} val:{values[v]}')
@@ -459,7 +472,15 @@ def set_datacache(values):
         flags['ffpa'].value = not not hdg
         flags['ffpa2'].value = not not hdg
 
-        #print(f"now set lcd")
+        if True:
+            try: # dataref may not be received already, even when connected
+                exped_led_state_desired = datacache['AirbusFBW/APVerticalMode'] >= 112
+            except:
+                exped_led_state_desired = False
+            if exped_led_state_desired != exped_led_state:
+                exped_led_state = exped_led_state_desired
+                winwing_fcu_set_led(fcu_out_endpoint, Leds.EXPED_GREEN, led_brightness * exped_led_state_desired)
+
         winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
 
 
