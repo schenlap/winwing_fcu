@@ -25,9 +25,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.25"
-     inkscape:cx="158"
-     inkscape:cy="1058"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="1050.4071"
+     inkscape:cy="319.25871"
      inkscape:window-width="1260"
      inkscape:window-height="730"
      inkscape:window-x="156"
@@ -1445,7 +1445,7 @@
          id="tspan2783-2-5-1-0-8"
          style="fill:#000000;stroke-width:0.264583"
          x="277.69946"
-         y="36.200001">v4 0x10</tspan></text><text
+         y="36.200001">v3 0x10</tspan></text><text
        xml:space="preserve"
        style="font-weight:bold;font-size:2.82223px;font-family:monospace;-inkscape-font-specification:'monospace Bold';fill:#00ff00;stroke-width:0.264583"
        x="109.68444"

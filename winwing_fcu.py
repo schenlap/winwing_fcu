@@ -167,6 +167,7 @@ flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
               ("lvl_right", Flag('lvl change right', Byte.A1, 0x10, True)),
               ("fvs", Flag('v/s-fpa_v/s', Byte.V0, 0x40)),
               ("ffpa2", Flag('v/s-fpa_fpa', Byte.V0, 0x80)),
+              ("fpa_comma", Flag('fpa_comma', Byte.V3, 0x10)),
               ])
 
 
@@ -443,6 +444,7 @@ def set_datacache(values):
         else:
             flags['vs_vert'].value = True
 
+        flags['fpa_comma'].value = False
         if datacache['AirbusFBW/SPDdashed']:
             speed = '---'
         if datacache['AirbusFBW/HDGdashed']:
@@ -456,7 +458,9 @@ def set_datacache(values):
             vs = vs.ljust(4, '#')
             print(f"vs: {v}")
         else:
-            vs = int(vs / 100)
+            vs = string_fix_length(int(vs / 100), 2)
+            vs = vs.ljust(4, ' ')
+            flags['fpa_comma'].value = True
         flags['spd_managed'].value = not not datacache['AirbusFBW/SPDmanaged']
         flags['hdg_managed'].value = not not datacache['AirbusFBW/HDGmanaged']
         flags['alt_managed'].value = not not datacache['AirbusFBW/ALTmanaged']
