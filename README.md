@@ -13,14 +13,13 @@ Tested with XP12 under linux (debian trixie) and Toliss A319.
 
 
 #### MAC-OS
-If you can help with the MAX-OS integration, please create a pull request.
-It is untested on mac-os, maybe it works.
 
 1. clone the repo where you want
-2. copy `udev/71-winwing.rules` to `/etc/udev/rules.d`  
-`sudo cp udev/71-winwing.rules /etc/udev/rules.d/`
+2. install homebrew
 3. install dependencies
 `python3 -m pip install pyusb`
+4. brew install libusb
+4. start script with sudo: `sudo python3 ./winwing_fcu.py`
 
 ## Use FCU
 1. start X-Plane
