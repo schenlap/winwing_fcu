@@ -375,9 +375,9 @@ def fcu_create_events(ep_in, ep_out, event):
         while True:
             sleep(0.02)
             try:
-                data_in = ep_in.read(0x81, 7)
-            except:
-                print(f' *** continue after usb-in error ***')
+                data_in = ep_in.read(0x81, 41)
+            except Exception as error:
+                print(f' *** continue after usb-in error: {error} ***')
                 continue
             if len(data_in) != 41:
                 print(f'rx data count {len(data_in)} not valid')
