@@ -251,7 +251,7 @@ def winwing_fcu_set_lcd(ep, speed, heading, alt, vs):
     except Exception as error:
         usb_retry = True
         print(f"error in commit data: {error}")
-    sleep(0.005) # prevent usb overflow error
+    #sleep(0.005) # prevent usb overflow error
     mutex_usb.release()
 
 
@@ -380,12 +380,15 @@ def fcu_button_event():
 
 
 def fcu_create_events(ep_in, ep_out, event):
+        global values
+        sleep(2) # wait for values to be available
         buttons_last = 0
         while True:
-            sleep(0.02)
+            set_datacache(values)
+            sleep(0.01)
             mutex_usb.acquire()
             try:
-                data_in = ep_in.read(0x81, 41)
+                data_in = ep_in.read(0x81, 105)
             except Exception as error:
                 print(f' *** continue after usb-in error: {error} ***')
                 mutex_usb.release()
@@ -500,9 +503,11 @@ def set_datacache(values):
         winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
 
 
+
 def main():
     global xp
     global fcu_in_endpoint, fcu_out_endpoint
+    global values
 
     create_button_list_fcu()
 
@@ -510,6 +515,9 @@ def main():
     if device is None:
         raise RuntimeError('Winwing FCU-A320 not found')
     print('Found winwing FCU-A320')
+
+    device.set_configuration()
+
     interface = device[0].interfaces()[0]
     if device.is_kernel_driver_active(interface.bInterfaceNumber):
         device.detach_kernel_driver(interface.bInterfaceNumber)
@@ -537,7 +545,9 @@ def main():
         try:
             values = xp.GetValues()
             #print(values)
-            set_datacache(values)
+            #values will be handled in fcu_create_events to write to usb only in one thread.
+            #We hope not to oversee same changes
+            #set_datacache(values) #
         except XPlaneUdp.XPlaneTimeout:
             print("XPlane Timeout")
             exit(0)
