@@ -386,7 +386,7 @@ def fcu_create_events(ep_in, ep_out, event):
             for i in range (32):
                 mask = 0x01 << i
                 if xor_bitmask(buttons, buttons_last, mask):
-                    print(f"buttons: {format(buttons, "#04x"):^14}")
+                    #print(f"buttons: {format(buttons, "#04x"):^14}")
                     if buttons & mask:
                         buttons_press_event[i] = 1
                     else:
