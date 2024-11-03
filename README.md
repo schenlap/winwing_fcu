@@ -31,6 +31,7 @@ Tested with:
 4. enjoy flying (and report bugs :-)  )
 
 ![fcu demo image](./documentation/fcu_demo.gif)
+![fcu demo image](./documentation/xplane_fcu_brightness.png)
 
 
 ## developer documentation
