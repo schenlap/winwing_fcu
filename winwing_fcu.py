@@ -375,7 +375,7 @@ def fcu_button_event():
                 xp.WriteDataRef(b.dataref, 0)
 
 
-def fcu_create_events(ep_in, ep_out, event):
+def fcu_create_events(ep_in, ep_out):
         global values
         sleep(2) # wait for values to be available
         buttons_last = 0
@@ -400,7 +400,6 @@ def fcu_create_events(ep_in, ep_out, event):
                         buttons_press_event[i] = 1
                     else:
                         buttons_release_event[i] = 1
-                    event.set()
                     fcu_button_event()
             buttons_last = buttons
 
@@ -465,7 +464,7 @@ def set_datacache(values):
             # small 0 for hundred-feed chars in v/s mode
             vs = string_fix_length(int(vs/100), 2)
             vs = vs.ljust(4, '#')
-            print(f"vs: {v}")
+            #print(f"vs: {v}")
         else:
             vs = string_fix_length(int(vs / 100), 2)
             vs = vs.ljust(4, ' ')
@@ -520,9 +519,7 @@ def main():
     fcu_out_endpoint = endpoints[1]
     fcu_in_endpoint = endpoints[0]
 
-    event=Event()
-
-    usb_event_thread = Thread(target=fcu_create_events, args=[fcu_in_endpoint, fcu_out_endpoint, event])
+    usb_event_thread = Thread(target=fcu_create_events, args=[fcu_in_endpoint, fcu_out_endpoint])
     usb_event_thread.start()
 
     print('opening socket')
