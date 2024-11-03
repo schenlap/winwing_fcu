@@ -516,11 +516,11 @@ def main():
         raise RuntimeError('Winwing FCU-A320 not found')
     print('Found winwing FCU-A320')
 
-    device.set_configuration()
-
     interface = device[0].interfaces()[0]
     if device.is_kernel_driver_active(interface.bInterfaceNumber):
         device.detach_kernel_driver(interface.bInterfaceNumber)
+
+    device.set_configuration()
 
     endpoints = device[0].interfaces()[0].endpoints()
     fcu_out_endpoint = endpoints[1]
