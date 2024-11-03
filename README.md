@@ -1,6 +1,9 @@
 # Winwing Fcu
 This script is to use Winwing A320 FCU on Linux (maybe Mac-OS) with X-Plane
-Tested with XP12 under linux (debian trixie) and Toliss A319.
+Tested with:
+ * XP12 under linux (debian trixie)
+ * XP12 under MacOs (Sequoia 15.0.1)
+ * Toliss A319, A320Neo, A321 Neo
 
 ## Installation
 
