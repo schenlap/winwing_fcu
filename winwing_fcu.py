@@ -137,6 +137,7 @@ class Byte(Enum):
     V3 = 9
     V0 = 10
     V1 = 11
+    S1 = 12
 
 
 
@@ -169,6 +170,7 @@ flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
               ("fvs", Flag('v/s-fpa_v/s', Byte.V0, 0x40)),
               ("ffpa2", Flag('v/s-fpa_fpa', Byte.V0, 0x80)),
               ("fpa_comma", Flag('fpa_comma', Byte.V3, 0x10)),
+              ("mach_comma", Flag('mach_comma', Byte.S1, 0x01)),
               ])
 
 
@@ -231,7 +233,7 @@ def winwing_fcu_set_lcd(ep, speed, heading, alt, vs):
         bl[flags[f].byte.value] |= (flags[f].mask * flags[f].value)
 
     pkg_nr = 1
-    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | bl[Byte.H3.value], h[2], h[1], h[0] | bl[Byte.H0.value], a[5] | bl[Byte.A5.value], a[4] | bl[Byte.A4.value], a[3] | bl[Byte.A3.value], a[2] | bl[Byte.A2.value], a[1] | bl[Byte.A1.value], a[0] | v[4] | bl[Byte.A0.value], v[3] | bl[Byte.V3.value], v[2] | bl[Byte.V2.value], v[1] | bl[Byte.V1.value], v[0] | bl[Byte.V0.value], 0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
+    data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1] | bl[Byte.S1.value], s[0], h[3] | bl[Byte.H3.value], h[2], h[1], h[0] | bl[Byte.H0.value], a[5] | bl[Byte.A5.value], a[4] | bl[Byte.A4.value], a[3] | bl[Byte.A3.value], a[2] | bl[Byte.A2.value], a[1] | bl[Byte.A1.value], a[0] | v[4] | bl[Byte.A0.value], v[3] | bl[Byte.V3.value], v[2] | bl[Byte.V2.value], v[1] | bl[Byte.V1.value], v[0] | bl[Byte.V0.value], 0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
     cmd = bytes(data)
     try:
         ep.write(cmd)
@@ -435,6 +437,9 @@ def set_datacache(values):
         if v == 'AirbusFBW/SupplLightLevelRehostats[1]' and values[v] <= 1:
             # brightness is in 0..1, we need 0..255
             values[v] = int(values[v] * 235 + 20)
+        spd_mach = datacache['sim/cockpit/autopilot/airspeed_is_mach']
+        if spd_mach and v == 'sim/cockpit2/autopilot/airspeed_dial_kts_mach' and values[v] < 1:
+            values[v] = (values[v] +0.005 ) * 100
         if datacache[v] != int(values[v]):
             new = True
             print(f'cache: v:{v} val:{int(values[v])}')
@@ -472,9 +477,10 @@ def set_datacache(values):
         flags['spd_managed'].value = not not datacache['AirbusFBW/SPDmanaged']
         flags['hdg_managed'].value = not not datacache['AirbusFBW/HDGmanaged']
         flags['alt_managed'].value = not not datacache['AirbusFBW/ALTmanaged']
-        spd_mach = datacache['sim/cockpit/autopilot/airspeed_is_mach']
         flags['spd'].value = not spd_mach
         flags['mach'].value = not not spd_mach
+        flags['mach_comma'].value = not not spd_mach
+
         flags['hdg'].value = not hdg
         flags['trk'].value = not not hdg
         flags['fvs'].value = not hdg
