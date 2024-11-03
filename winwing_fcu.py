@@ -337,6 +337,8 @@ def xor_bitmask(a, b, bitmask):
 def fcu_button_event():
     #print(f'events: press: {buttons_press_event}, release: {buttons_release_event}')
     for b in buttonlist:
+        if not any(buttons_press_event) and not any(buttons_release_event):
+            break;
         if buttons_press_event[b.id]:
             buttons_press_event[b.id] = 0
             #print(f'button {b.label} pressed')
