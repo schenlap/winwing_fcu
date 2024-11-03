@@ -62,7 +62,7 @@ class Button:
         self.type = button_type
         self.led = led
 
-mutex_usb = Lock()
+values_processed = Event()
 buttonlist = []
 
 led_brightness = 128
@@ -179,10 +179,7 @@ def swap_nibbles(x):
 def winwing_fcu_set_led(ep, led, brightness):
     data = [0x02, 0x10, 0xbb, 0, 0, 3, 0x49, led.value, brightness, 0,0,0,0,0]
     cmd = bytes(data)
-    mutex_usb.acquire()
     ep.write(cmd)
-    sleep(0.005) # prevent usb overflow error
-    mutex_usb.release()
 
 
 def lcd_init(ep):
@@ -236,7 +233,6 @@ def winwing_fcu_set_lcd(ep, speed, heading, alt, vs):
     pkg_nr = 1
     data = [0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, s[2], s[1], s[0], h[3] | bl[Byte.H3.value], h[2], h[1], h[0] | bl[Byte.H0.value], a[5] | bl[Byte.A5.value], a[4] | bl[Byte.A4.value], a[3] | bl[Byte.A3.value], a[2] | bl[Byte.A2.value], a[1] | bl[Byte.A1.value], a[0] | v[4] | bl[Byte.A0.value], v[3] | bl[Byte.V3.value], v[2] | bl[Byte.V2.value], v[1] | bl[Byte.V1.value], v[0] | bl[Byte.V0.value], 0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
     cmd = bytes(data)
-    mutex_usb.acquire()
     try:
         ep.write(cmd)
     except Exception as error:
@@ -251,8 +247,6 @@ def winwing_fcu_set_lcd(ep, speed, heading, alt, vs):
     except Exception as error:
         usb_retry = True
         print(f"error in commit data: {error}")
-    #sleep(0.005) # prevent usb overflow error
-    mutex_usb.release()
 
 
 fcu_device = None # usb /dev/inputx device
@@ -385,15 +379,13 @@ def fcu_create_events(ep_in, ep_out, event):
         buttons_last = 0
         while True:
             set_datacache(values)
-            sleep(0.01)
-            mutex_usb.acquire()
+            values_processed.set()
+            sleep(0.005)
             try:
                 data_in = ep_in.read(0x81, 105)
             except Exception as error:
                 print(f' *** continue after usb-in error: {error} ***')
-                mutex_usb.release()
                 continue
-            mutex_usb.release()
             if len(data_in) != 41:
                 print(f'rx data count {len(data_in)} not valid')
                 continue
@@ -544,10 +536,10 @@ def main():
     while True:
         try:
             values = xp.GetValues()
+            values_processed.wait()
             #print(values)
             #values will be handled in fcu_create_events to write to usb only in one thread.
-            #We hope not to oversee same changes
-            #set_datacache(values) #
+            # see function set_datacache(values)
         except XPlaneUdp.XPlaneTimeout:
             print("XPlane Timeout")
             exit(0)
