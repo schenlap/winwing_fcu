@@ -42,3 +42,7 @@ See [documention](./documentation/README.md) for developers
 ## Notes
 Use at your own risk. Updates to the FCU can make the script incompatible.
 TODO: The data sent in the USB protocol by SimApp Pro has not yet been fully implemented, only to the extent that it currently works.
+
+## Next steps
+ * wait for running x-plane
+ * add EFIS co-pilot side when EFIS arrives
