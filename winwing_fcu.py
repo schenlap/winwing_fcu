@@ -7,6 +7,7 @@ UDP_PORT = 49000
 import binascii
 from dataclasses import dataclass
 from enum import Enum
+import os
 import socket
 import struct
 
@@ -64,6 +65,7 @@ class Button:
 
 values_processed = Event()
 buttonlist = []
+values = []
 
 led_brightness = 128
 exped_led_state = False
@@ -549,7 +551,7 @@ def main():
             # see function set_datacache(values)
         except XPlaneUdp.XPlaneTimeout:
             print(f"X-Plane timeout, could not connect on port {xp.BeaconData["Port"]}")
-            exit(0)
+            os._exit(1) # force quit
 
 if __name__ == '__main__':
   main() 
