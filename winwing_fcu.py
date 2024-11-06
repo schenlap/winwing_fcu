@@ -530,8 +530,8 @@ def main():
 
     print('opening socket')
     xp = XPlaneUdp.XPlaneUdp()
-    xp.BeaconData["IP"] = '127.0.0.1' # workaround to set IP and port
-    xp.BeaconData["Port"] = 49000
+    xp.BeaconData["IP"] = UDP_IP # workaround to set IP and port
+    xp.BeaconData["Port"] = UDP_PORT
     xp.UDP_PORT = xp.BeaconData["Port"]
 
     #beacon = xp.FindIp()
@@ -546,7 +546,7 @@ def main():
             #values will be handled in fcu_create_events to write to usb only in one thread.
             # see function set_datacache(values)
         except XPlaneUdp.XPlaneTimeout:
-            print("XPlane Timeout")
+            print(f"X-Plane timeout, could not connect on port {xp.BeaconData["Port"]}")
             exit(0)
 
 if __name__ == '__main__':
