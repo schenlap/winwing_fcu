@@ -525,6 +525,8 @@ def main():
     fcu_out_endpoint = endpoints[1]
     fcu_in_endpoint = endpoints[0]
 
+    winwing_fcu_set_lcd(fcu_out_endpoint, "   ", "   ", "Schen", " lap")
+
     usb_event_thread = Thread(target=fcu_create_events, args=[fcu_in_endpoint, fcu_out_endpoint])
     usb_event_thread.start()
 
