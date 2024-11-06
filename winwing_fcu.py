@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 # IP Address of machine running X-Plane. 
 UDP_IP = "127.0.0.1"
