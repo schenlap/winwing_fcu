@@ -64,6 +64,7 @@ class Button:
         self.led = led
 
 values_processed = Event()
+xplane_connected = False
 buttonlist = []
 values = []
 
@@ -384,6 +385,10 @@ def fcu_create_events(ep_in, ep_out):
         sleep(2) # wait for values to be available
         buttons_last = 0
         while True:
+            if not xplane_connected: # wait for x-plane
+                sleep(1)
+                continue
+
             set_datacache(values)
             values_processed.set()
             sleep(0.005)
@@ -504,11 +509,18 @@ def set_datacache(values):
         winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
 
 
+def kb_wait_quit_event():
+    print(f"*** Press ENTER to quit this script ***\n")
+    while True:
+        c = input() # wait for ENTER (not worth to implement kbhit for differnt plattforms, so make it very simple)
+        print(f"Exit")
+        os._exit(0)
+
 
 def main():
     global xp
     global fcu_in_endpoint, fcu_out_endpoint
-    global values
+    global values, xplane_connected
 
     create_button_list_fcu()
 
@@ -516,6 +528,7 @@ def main():
     if device is None:
         raise RuntimeError('Winwing FCU-A320 not found')
     print('Found winwing FCU-A320')
+    print('compatible with X-Plane 11/12 and all Toliss Airbus')
 
     interface = device[0].interfaces()[0]
     if device.is_kernel_driver_active(interface.bInterfaceNumber):
@@ -532,17 +545,31 @@ def main():
     usb_event_thread = Thread(target=fcu_create_events, args=[fcu_in_endpoint, fcu_out_endpoint])
     usb_event_thread.start()
 
-    print('opening socket')
+    kb_quit_event_thread = Thread(target=kb_wait_quit_event)
+    kb_quit_event_thread.start()
+
+    print('wait for X-Plane to connect on port {xp.BeaconData["Port"]}')
     xp = XPlaneUdp.XPlaneUdp()
     xp.BeaconData["IP"] = UDP_IP # workaround to set IP and port
     xp.BeaconData["Port"] = UDP_PORT
     xp.UDP_PORT = xp.BeaconData["Port"]
 
-    #beacon = xp.FindIp()
-
-    RequestDataRefs(xp)
-
     while True:
+        if not xplane_connected:
+            try:
+                xp.AddDataRef("sim/aircraft/view/acf_tailnum")
+                values = xp.GetValues()
+                xplane_connected = True
+            except XPlaneUdp.XPlaneTimeout:
+                xplane_connected = False
+                sleep(2)
+                print(f"wait for X-Plane")
+            if xplane_connected == True: # new connected
+                print(f"X-Plane connected")
+                RequestDataRefs(xp)
+                xp.AddDataRef("sim/aircraft/view/acf_tailnum", 0)
+            continue
+
         try:
             values = xp.GetValues()
             values_processed.wait()
@@ -551,7 +578,8 @@ def main():
             # see function set_datacache(values)
         except XPlaneUdp.XPlaneTimeout:
             print(f"X-Plane timeout, could not connect on port {xp.BeaconData["Port"]}")
-            os._exit(1) # force quit
+            xplane_connected = False
+            sleep(2)
 
 if __name__ == '__main__':
   main() 
