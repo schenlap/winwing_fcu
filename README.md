@@ -1,9 +1,10 @@
 # Winwing Fcu
-This script is to use Winwing A320 FCU on Linux (maybe Mac-OS) with X-Plane
+This script is to use Winwing A320 FCU on Linux (maybe Mac-OS) with X-Plane. 
+All buttons, leds and lcd displays work the same way as in X-Plane.<br>
 Tested with:
  * XP12 under linux (debian trixie)
  * XP12 under MacOs (Sequoia 15.0.1)
- * Toliss A319, A320Neo, A321 Neo
+ * Toliss A319, A320Neo, A321Neo, A339
 
 ## Installation
 
@@ -13,6 +14,7 @@ Tested with:
 `sudo cp udev/71-winwing.rules /etc/udev/rules.d/`
 3. install dependencies (on debian based systems)  
 `sudo aptitude install python3-usb`
+4. start script (with udev rule no sudo needed): `python3 ./winwing_fcu.py` when X-Plane with Toliss aircraft is loaded.
 
 
 #### MAC-OS
@@ -22,12 +24,13 @@ Tested with:
 3. install dependencies
 `python3 -m pip install pyusb`
 4. brew install libusb
-4. start script with sudo: `sudo python3 ./winwing_fcu.py`
+5. let pyusb find libusb: `ln -s /opt/homebrew/lib ~/lib` 
+6. start script with sudo: `sudo python3 ./winwing_fcu.py` when X-Plane with Toliss aircraft is loaded.
 
 ## Use FCU
 1. start X-Plane
 2. load Toliss A319
-3. start script with `./winwing_fcu.py`
+3. start script as written above
 4. enjoy flying (and report bugs :-)  )
 
 ![fcu demo image](./documentation/fcu_demo.gif)
@@ -45,4 +48,4 @@ TODO: The data sent in the USB protocol by SimApp Pro has not yet been fully imp
 
 ## Next steps
  * wait for running x-plane
- * add EFIS co-pilot side when EFIS arrives
+ * add EFIS co-pilot side when my EFIS arrives (~dezember)
