@@ -548,7 +548,7 @@ def main():
     kb_quit_event_thread = Thread(target=kb_wait_quit_event)
     kb_quit_event_thread.start()
 
-    print('wait for X-Plane to connect on port {xp.BeaconData["Port"]}')
+    print(f'wait for X-Plane to connect on port {xp.BeaconData["Port"]}')
     xp = XPlaneUdp.XPlaneUdp()
     xp.BeaconData["IP"] = UDP_IP # workaround to set IP and port
     xp.BeaconData["Port"] = UDP_PORT
