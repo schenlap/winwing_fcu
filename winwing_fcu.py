@@ -560,14 +560,13 @@ def main():
                 xp.AddDataRef("sim/aircraft/view/acf_tailnum")
                 values = xp.GetValues()
                 xplane_connected = True
+                print(f"X-Plane connected")
+                RequestDataRefs(xp)
+                xp.AddDataRef("sim/aircraft/view/acf_tailnum", 0)
             except XPlaneUdp.XPlaneTimeout:
                 xplane_connected = False
                 sleep(2)
                 print(f"wait for X-Plane")
-            if xplane_connected == True: # new connected
-                print(f"X-Plane connected")
-                RequestDataRefs(xp)
-                xp.AddDataRef("sim/aircraft/view/acf_tailnum", 0)
             continue
 
         try:
