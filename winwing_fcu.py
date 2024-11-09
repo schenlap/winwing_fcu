@@ -548,11 +548,11 @@ def main():
     kb_quit_event_thread = Thread(target=kb_wait_quit_event)
     kb_quit_event_thread.start()
 
-    print(f'wait for X-Plane to connect on port {xp.BeaconData["Port"]}')
     xp = XPlaneUdp.XPlaneUdp()
     xp.BeaconData["IP"] = UDP_IP # workaround to set IP and port
     xp.BeaconData["Port"] = UDP_PORT
     xp.UDP_PORT = xp.BeaconData["Port"]
+    print(f'wait for X-Plane to connect on port {xp.BeaconData["Port"]}')
 
     while True:
         if not xplane_connected:
@@ -576,7 +576,7 @@ def main():
             #values will be handled in fcu_create_events to write to usb only in one thread.
             # see function set_datacache(values)
         except XPlaneUdp.XPlaneTimeout:
-            print(f"X-Plane timeout, could not connect on port {xp.BeaconData["Port"]}")
+            print(f'X-Plane timeout, could not connect on port {xp.BeaconData["Port"]}')
             xplane_connected = False
             sleep(2)
 
