@@ -3,6 +3,7 @@ This script is to use Winwing A320 FCU on Linux (maybe Mac-OS) with X-Plane.
 All buttons, leds and lcd displays work the same way as in X-Plane.<br>
 Tested with:
  * XP12 under linux (debian trixie)
+ * XP11 under linux (debian bookworm)
  * XP12 under MacOs (Sequoia 15.0.1)
  * Toliss A319, A320Neo, A321Neo, A339
 
