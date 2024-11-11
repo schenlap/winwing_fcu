@@ -27,6 +27,7 @@ Tested with:
 4. brew install libusb
 5. let pyusb find libusb: `ln -s /opt/homebrew/lib ~/lib` 
 6. start script with sudo: `sudo python3 ./winwing_fcu.py` when X-Plane with Toliss aircraft is loaded.
+7. A detailed installation instruction can be found on [x-plane forum](https://forums.x-plane.org/index.php?/forums/topic/310045-winwing-fcu-on-plane-12-on-a-mac-studio/&do=findComment&comment=2798635).
 
 ## Use FCU
 1. start X-Plane
