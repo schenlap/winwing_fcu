@@ -292,7 +292,7 @@ xp = None
 
 def create_button_list_fcu():
     buttonlist.append(Button(0, "MACH", "toliss_airbus/ias_mach_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(1, "LOC", "AirbusFBW/LOCbutton", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.LOC_GREEN))
+    buttonlist.append(Button(1, "LOC", "AirbusFBW/LOCbutton", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(2, "TRK", "toliss_airbus/hdgtrk_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(3, "AP1", "AirbusFBW/AP1Engage", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.AP1_GREEN))
     buttonlist.append(Button(4, "AP2", "AirbusFBW/AP2Engage", DREF_TYPE.DATA, BUTTON.TOGGLE, Leds.AP2_GREEN))
@@ -322,6 +322,7 @@ def create_button_list_fcu():
     buttonlist.append(Button(27, "BRIGHT_LCD", "AirbusFBW/SupplLightLevelRehostats[1]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT))
     buttonlist.append(Button(28, "APPR_LED", "AirbusFBW/APPRilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.APPR_GREEN))
     buttonlist.append(Button(29, "ATHR_LED", "AirbusFBW/ATHRmode", DREF_TYPE.DATA, BUTTON.NONE, Leds.ATHR_GREEN))
+    buttonlist.append(Button(30, "LOC_LED", "AirbusFBW/LOCilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.LOC_GREEN))
 
 
 def RequestDataRefs(xp):
