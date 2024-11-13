@@ -403,7 +403,7 @@ def fcu_create_events(ep_in, ep_out):
                 print(f'rx data count {len(data_in)} not valid')
                 continue
             buttons=data_in[1] | (data_in[2] << 8) | (data_in[3] << 16) | (data_in[4] << 24)
-            for i in range (32):
+            for i in range (BUTTONS_CNT):
                 mask = 0x01 << i
                 if xor_bitmask(buttons, buttons_last, mask):
                     #print(f"buttons: {format(buttons, "#04x"):^14}")
