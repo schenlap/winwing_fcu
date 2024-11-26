@@ -521,6 +521,7 @@ def kb_wait_quit_event():
 
 def find_usblib():
     path = ['/opt/homebrew/lib/libusb-1.0.0.dylib',
+            '/usr/local/cellar/libusb/libusb-1.0.0.dylib', # mac ventura 13.5.1
             '/usr/lib/x86_64-linux-gnu/libusb-1.0.so.0',
             '/usr/lib/libusb-1.0.so.0']
     pathlist = list(enumerate(path))
