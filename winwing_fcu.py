@@ -320,6 +320,8 @@ def create_button_list_fcu():
     buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_ONE))
     buttonlist.append(Button(27, "BRIGHT", "AirbusFBW/SupplLightLevelRehostats[0]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT))
     buttonlist.append(Button(27, "BRIGHT_LCD", "AirbusFBW/SupplLightLevelRehostats[1]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT))
+    #buttonlist.append(Button(27, "BRIGHT", "sim/cockpit2/electrical/instrument_brightness_ratio_manual[14]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT)) # Laminar A330
+    #buttonlist.append(Button(27, "BRIGHT_LCD", "sim/cockpit2/electrical/instrument_brightness_ratio_manual[10]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT)) # Laminar A330
     buttonlist.append(Button(28, "APPR_LED", "AirbusFBW/APPRilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.APPR_GREEN))
     buttonlist.append(Button(29, "ATHR_LED", "AirbusFBW/ATHRmode", DREF_TYPE.DATA, BUTTON.NONE, Leds.ATHR_GREEN))
     buttonlist.append(Button(30, "LOC_LED", "AirbusFBW/LOCilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.LOC_GREEN))
@@ -446,6 +448,12 @@ def set_datacache(values):
         if v == 'AirbusFBW/SupplLightLevelRehostats[1]' and values[v] <= 1:
             # brightness is in 0..1, we need 0..255
             values[v] = int(values[v] * 235 + 20)
+        if v == 'sim/cockpit2/electrical/instrument_brightness_ratio_manual[10]' and values[v] <= 1:
+            # brightness is in 0..1, we need 0..255
+            values[v] = int(values[v] * 255)
+        if v == 'sim/cockpit2/electrical/instrument_brightness_ratio_manual[14]' and values[v] <= 1:
+            # brightness is in 0..1, we need 0..255
+            values[v] = int(values[v] * 255)
         spd_mach = datacache['sim/cockpit/autopilot/airspeed_is_mach']
         if spd_mach and v == 'sim/cockpit2/autopilot/airspeed_dial_kts_mach' and values[v] < 1:
             values[v] = (values[v] +0.005 ) * 100
