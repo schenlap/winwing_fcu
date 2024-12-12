@@ -554,9 +554,19 @@ def main():
     create_button_list_fcu()
 
     backend = find_usblib()
+
     device = usb.core.find(idVendor=0x4098, idProduct=0xbb10, backend=backend)
     if device is None:
-        raise RuntimeError('Winwing FCU-A320 not found')
+        print(f"searching for FCU ... not found")
+        device = usb.core.find(idVendor=0x4098, idProduct=0xbc1e, backend=backend)
+        if device is None:
+            print(f"searching for FCU + EFIS-R ... not found")
+            raise RuntimeError('No device not found')
+        else:
+            print(f"searching for FCU + EFIS-R ... found")
+    else:
+        print(f"searching for FCU ... found")
+
     print('Found winwing FCU-A320')
     print('compatible with X-Plane 11/12 and all Toliss Airbus')
 

@@ -28,7 +28,16 @@ backend = find_usblib()
 
 device = usb.core.find(idVendor=0x4098, idProduct=0xbb10, backend=backend)
 if device is None:
-    raise RuntimeError('Device not found')
+    print(f"seachring for FCU ... not found")
+    device = usb.core.find(idVendor=0x4098, idProduct=0xbc1e, backend=backend)
+    if device is None:
+        print(f"seachring for FCU + EFIS-R ... not found")
+        raise RuntimeError('No device not found')
+    else:
+        print(f"seachring for FCU + EFIS-R ... found")
+else:
+    print(f"seachring for FCU ... found")
+
 interface = device[0].interfaces()[0]
 if device.is_kernel_driver_active(interface.bInterfaceNumber):
     device.detach_kernel_driver(interface.bInterfaceNumber)
