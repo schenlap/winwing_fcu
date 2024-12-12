@@ -217,7 +217,7 @@ I use Linux as host system and Windows in virt-manager that runs SimApp pro. Wir
 ## wireshark
 
 to start sniffing:
-1. sudo mount -t debugfs / /sys/kernel/debug
+1. sudo mount -t debugfs none /sys/kernel/debug
 2. sudo modprobe usbmon
 3. sudo setfacl -m u:$USER:r /dev/usbmon*
 4. wireshark
