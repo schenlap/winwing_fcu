@@ -6,7 +6,7 @@ UDP_PORT = 49000
 
 import binascii
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, IntEnum
 import os
 import socket
 import struct
@@ -24,15 +24,26 @@ import usb.util
 
 import XPlaneUdp
 
-BUTTONS_CNT = 32
+BUTTONS_CNT = 32+32 # FCU:32, EFISR:32
+
+#@unique
+class DEVICEMASK(IntEnum):
+    NONE = 0
+    FCU = 1
+    EFISR = 2
+    EFISL = 4
 
 
 class BUTTON(Enum):
     SWITCH = 0
     TOGGLE = 1
-    SEND_ZERO = 2
-    SEND_ONE = 3
-    NONE = 4 # for testing
+    SEND_0 = 2
+    SEND_1 = 3
+    SEND_2 = 4
+    SEND_3 = 5
+    SEND_4 = 6
+    SEND_5 = 7
+    NONE = 5 # for testing
 
 
 class Leds(Enum):
@@ -71,6 +82,8 @@ values = []
 
 led_brightness = 180
 exped_led_state = False
+
+device_config = DEVICEMASK.NONE
 
 
 
@@ -316,8 +329,8 @@ def create_button_list_fcu():
     buttonlist.append(Button(22, "VS INC", "sim/autopilot/vertical_speed_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(23, "VS PUSH", "AirbusFBW/PushVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(24, "VS PULL", "AirbusFBW/PullVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(25, "ALT 100", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_ZERO))
-    buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_ONE))
+    buttonlist.append(Button(25, "ALT 100", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_0))
+    buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_1))
     buttonlist.append(Button(27, "BRIGHT", "AirbusFBW/SupplLightLevelRehostats[0]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT))
     buttonlist.append(Button(27, "BRIGHT_LCD", "AirbusFBW/SupplLightLevelRehostats[1]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT))
     #buttonlist.append(Button(27, "BRIGHT", "sim/cockpit2/electrical/instrument_brightness_ratio_manual[14]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT)) # Laminar A330
@@ -325,6 +338,41 @@ def create_button_list_fcu():
     buttonlist.append(Button(28, "APPR_LED", "AirbusFBW/APPRilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.APPR_GREEN))
     buttonlist.append(Button(29, "ATHR_LED", "AirbusFBW/ATHRmode", DREF_TYPE.DATA, BUTTON.NONE, Leds.ATHR_GREEN))
     buttonlist.append(Button(30, "LOC_LED", "AirbusFBW/LOCilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.LOC_GREEN))
+
+    if device_config & DEVICEMASK.EFISR:
+        buttonlist.append(Button(32, "R_FD", "toliss_airbus/fd2_push", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
+        buttonlist.append(Button(33, "R_LS", "toliss_airbus/dispcommands/CoLSButtonPush", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
+        buttonlist.append(Button(34, "R_CSTR", "toliss_airbus/dispcommands/CoCstrPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
+        buttonlist.append(Button(35, "R_WPT", "toliss_airbus/dispcommands/CoWptPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
+        buttonlist.append(Button(36, "R_VOR.D", "toliss_airbus/dispcommands/CoVorDPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
+        buttonlist.append(Button(37, "R_NDB", "toliss_airbus/dispcommands/CoNdbPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
+        buttonlist.append(Button(38, "R_ARPT", "toliss_airbus/dispcommands/CoArptPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
+        buttonlist.append(Button(39, "R_STD PUSH", "toliss_airbus/copilot_baro_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(40, "R_STD PULL", "toliss_airbus/copilot_baro_pull", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(41, "R_PRESS DEC", "sim/instruments/barometer_down", DREF_TYPE.CMD, BUTTON.TOGGLE)) # TODO send 3 cmd in hPa mode
+        buttonlist.append(Button(42, "R_PRESS INC", "sim/instruments/barometer_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(43, "R_inHg", "AirbusFBW/BaroUnitFO", DREF_TYPE.DATA, BUTTON.SEND_0))
+        buttonlist.append(Button(44, "R_hPa", "AirbusFBW/BaroUnitFO", DREF_TYPE.DATA, BUTTON.SEND_1))
+        buttonlist.append(Button(45, "R_MODE LS", "AirbusFBW/NDmodeFO", DREF_TYPE.DATA, BUTTON.SEND_0))
+        buttonlist.append(Button(46, "R_MODE VOR", "AirbusFBW/NDmodeFO", DREF_TYPE.DATA, BUTTON.SEND_1))
+        buttonlist.append(Button(47, "R_MODE NAV", "AirbusFBW/NDmodeFO", DREF_TYPE.DATA, BUTTON.SEND_2))
+        buttonlist.append(Button(48, "R_MODE ARC", "AirbusFBW/NDmodeFO", DREF_TYPE.DATA, BUTTON.SEND_3))
+        buttonlist.append(Button(49, "R_MODE PLAN", "AirbusFBW/NDmodeFO", DREF_TYPE.DATA, BUTTON.SEND_4))
+        buttonlist.append(Button(50, "R_RANGE 10", "AirbusFBW/NDrangeFO", DREF_TYPE.DATA, BUTTON.SEND_0))
+        buttonlist.append(Button(51, "R_RANGE 20", "AirbusFBW/NDrangeFO", DREF_TYPE.DATA, BUTTON.SEND_1))
+        buttonlist.append(Button(52, "R_RANGE 40", "AirbusFBW/NDrangeFO", DREF_TYPE.DATA, BUTTON.SEND_2))
+        buttonlist.append(Button(53, "R_RANGE 80", "AirbusFBW/NDrangeFO", DREF_TYPE.DATA, BUTTON.SEND_3))
+        buttonlist.append(Button(54, "R_RANGE 160", "AirbusFBW/NDrangeFO", DREF_TYPE.DATA, BUTTON.SEND_4))
+        buttonlist.append(Button(55, "R_RANGE 320", "AirbusFBW/NDrangeFO", DREF_TYPE.DATA, BUTTON.SEND_5))
+        buttonlist.append(Button(56, "R_1 VOR", "sim/cockpit2/EFIS/EFIS_1_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_2))
+        buttonlist.append(Button(57, "R_1 OFF", "sim/cockpit2/EFIS/EFIS_1_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_1))
+        buttonlist.append(Button(58, "R_1 ADF", "sim/cockpit2/EFIS/EFIS_1_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_0))
+        buttonlist.append(Button(59, "R_2 VOR", "sim/cockpit2/EFIS/EFIS_2_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_2))
+        buttonlist.append(Button(60, "R_2 OFF", "sim/cockpit2/EFIS/EFIS_2_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_1))
+        buttonlist.append(Button(61, "R_2 ADF", "sim/cockpit2/EFIS/EFIS_2_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_0))
+        buttonlist.append(Button(62, "62", "", DREF_TYPE.NONE, BUTTON.NONE, Leds.LOC_GREEN))
+        buttonlist.append(Button(63, "63", "", DREF_TYPE.NONE, BUTTON.NONE, Leds.LOC_GREEN))
+
 
 
 def RequestDataRefs(xp):
@@ -367,14 +415,30 @@ def fcu_button_event():
                 elif b.dreftype== DREF_TYPE.CMD:
                     print(f'send command {b.dataref}')
                     xp.SendCommand(b.dataref)
-            elif b.type == BUTTON.SEND_ZERO:
+            elif b.type == BUTTON.SEND_0:
                 if b.dreftype== DREF_TYPE.DATA:
                     print(f'set dataref {b.dataref} to 0')
                     xp.WriteDataRef(b.dataref, 0)
-            elif b.type == BUTTON.SEND_ONE:
+            elif b.type == BUTTON.SEND_1:
                 if b.dreftype== DREF_TYPE.DATA:
                     print(f'set dataref {b.dataref} to 1')
                     xp.WriteDataRef(b.dataref, 1)
+            elif b.type == BUTTON.SEND_2:
+                if b.dreftype== DREF_TYPE.DATA:
+                    print(f'set dataref {b.dataref} to 2')
+                    xp.WriteDataRef(b.dataref, 2)
+            elif b.type == BUTTON.SEND_3:
+                if b.dreftype== DREF_TYPE.DATA:
+                    print(f'set dataref {b.dataref} to 3')
+                    xp.WriteDataRef(b.dataref, 3)
+            elif b.type == BUTTON.SEND_4:
+                if b.dreftype== DREF_TYPE.DATA:
+                    print(f'set dataref {b.dataref} to 4')
+                    xp.WriteDataRef(b.dataref, 4)
+            elif b.type == BUTTON.SEND_5:
+                if b.dreftype== DREF_TYPE.DATA:
+                    print(f'set dataref {b.dataref} to 5')
+                    xp.WriteDataRef(b.dataref, 5)
             else:
                 print(f'no known button type for button {b.label}')
         if buttons_release_event[b.id]:
@@ -404,7 +468,9 @@ def fcu_create_events(ep_in, ep_out):
             if len(data_in) != 41:
                 print(f'rx data count {len(data_in)} not valid')
                 continue
-            buttons=data_in[1] | (data_in[2] << 8) | (data_in[3] << 16) | (data_in[4] << 24)
+            buttons=data_in[1] | (data_in[2] << 8) | (data_in[3] << 16) | (data_in[4] << 24) # FCU
+            if device_config & DEVICEMASK.EFISR:
+                buttons |= (data_in[9] << 32) | (data_in[10] << 40 ) | (data_in[11] << 48) | (data_in[12] << 56)
             for i in range (BUTTONS_CNT):
                 mask = 0x01 << i
                 if xor_bitmask(buttons, buttons_last, mask):
@@ -550,25 +616,27 @@ def main():
     global xp
     global fcu_in_endpoint, fcu_out_endpoint
     global values, xplane_connected
-
-    create_button_list_fcu()
+    global device_config
 
     backend = find_usblib()
 
     device = usb.core.find(idVendor=0x4098, idProduct=0xbb10, backend=backend)
     if device is None:
-        print(f"searching for FCU ... not found")
+        print(f"searching for Winwing FCU ... not found")
         device = usb.core.find(idVendor=0x4098, idProduct=0xbc1e, backend=backend)
         if device is None:
-            print(f"searching for FCU + EFIS-R ... not found")
+            print(f"searching for Winwing FCU + EFIS-R ... not found")
             raise RuntimeError('No device not found')
         else:
-            print(f"searching for FCU + EFIS-R ... found")
+            device_config |= DEVICEMASK.FCU | DEVICEMASK.EFISR
+            print(f"searching for Winwing FCU + EFIS-R ... found")
     else:
-        print(f"searching for FCU ... found")
+        device_config |= DEVICEMASK.FCU
+        print(f"searching for Winwing FCU ... found")
 
-    print('Found winwing FCU-A320')
     print('compatible with X-Plane 11/12 and all Toliss Airbus')
+
+    create_button_list_fcu()
 
     interface = device[0].interfaces()[0]
     if device.is_kernel_driver_active(interface.bInterfaceNumber):
