@@ -746,7 +746,8 @@ def main():
     fcu_out_endpoint = endpoints[1]
     fcu_in_endpoint = endpoints[0]
 
-    winwing_fcu_set_led(fcu_out_endpoint, Leds.SCREEN_BACKLIGHT, 180)
+    winwing_fcu_set_leds(fcu_out_endpoint, [Leds.SCREEN_BACKLIGHT, Leds.EFISR_SCREEN_BACKLIGHT], 180)
+    winwing_fcu_set_leds(fcu_out_endpoint, [Leds.BACKLIGHT, Leds.EFISR_BACKLIGHT], 80)
     winwing_fcu_set_lcd(fcu_out_endpoint, "   ", "   ", "Schen", " lap")
     winwing_efisr_set_lcd(fcu_out_endpoint, '----')
 
