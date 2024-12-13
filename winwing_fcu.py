@@ -223,7 +223,7 @@ def winwing_fcu_set_leds(ep, leds, brightness):
 def winwing_fcu_set_led(ep, led, brightness):
     if led.value < 100: # FCU
         data = [0x02, 0x10, 0xbb, 0, 0, 3, 0x49, led.value, brightness, 0,0,0,0,0]
-    else: # EFIS_R
+    elif device_config & DEVICEMASK.EFISR: # EFIS_R
         data = [0x02, 0x0e, 0xbf, 0, 0, 3, 0x49, led.value - 100, brightness, 0,0,0,0,0]
     cmd = bytes(data)
     ep.write(cmd)
