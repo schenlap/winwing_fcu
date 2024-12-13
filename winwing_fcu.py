@@ -155,6 +155,10 @@ class Byte(Enum):
     V0 = 10
     V1 = 11
     S1 = 12
+    EFISR_B0 = 13
+    EFISR_B2 = 14
+    EFISL_B0 = 15
+    EFISL_B2 = 16
 
 
 
@@ -188,6 +192,9 @@ flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
               ("ffpa2", Flag('v/s-fpa_fpa', Byte.V0, 0x80)),
               ("fpa_comma", Flag('fpa_comma', Byte.V3, 0x10)),
               ("mach_comma", Flag('mach_comma', Byte.S1, 0x01)),
+              ("efisr_qfe", Flag('efisr_qfe', Byte.EFISR_B0, 0x01)), # TODO: don't know when to set this
+              ("efisr_qnh", Flag('efisr_qnh', Byte.EFISR_B0, 0x02)),
+              ("efisr_hpa_dec", Flag('efisr_hpa_dec', Byte.EFISR_B2, 0x80)),
               ])
 
 
@@ -233,6 +240,27 @@ def data_from_string_swapped(num_7segments, string): # some 7-segemnts have wire
 
     return d
 
+
+def data_from_string_swapped_efis(num_7segments, string): # next wired mapping :-)
+
+    l = num_7segments
+
+    d = data_from_string(l, string)
+    n = [0] * l
+
+    # fix wired segment mapping
+    for i in range(len(d)):
+        n[i] |= 0x01 if d[i] & 0x08 else 0
+        n[i] |= 0x02 if d[i] & 0x04 else 0
+        n[i] |= 0x04 if d[i] & 0x02 else 0
+        n[i] |= 0x08 if d[i] & 0x10 else 0
+        n[i] |= 0x10 if d[i] & 0x80 else 0
+        n[i] |= 0x20 if d[i] & 0x40 else 0
+        n[i] |= 0x40 if d[i] & 0x20 else 0
+        n[i] |= 0x80 if d[i] & 0x01 else 0
+
+    return n
+
 def string_fix_length(v, l):
     s = str(v)
     return s.rjust(l, '0')
@@ -268,6 +296,28 @@ def winwing_fcu_set_lcd(ep, speed, heading, alt, vs):
         print(f"error in commit data: {error}")
 
 
+def winwing_efisr_set_lcd(ep, baro):
+    global usb_retry
+    b = data_from_string_swapped_efis( 4, string_fix_length(baro, 4))
+
+    bl = [0] * len(Byte)
+    for f in flags:
+        bl[flags[f].byte.value] |= (flags[f].mask * flags[f].value)
+
+    pkg_nr = 1
+
+#                                                              alwa  unknown3   chksum    unknown4 nown5  cmd2    ZZZEEEERRROoooo                  seg 1    2     3     4
+    data = [0xf0, 0x0, pkg_nr, 0x1a, 0x0e, 0xbf, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x1d, 0x0, 0x0, 0x9, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, b[3], b[2] | bl[Byte.EFISR_B2.value], b[1], b[0], bl[Byte.EFISR_B0.value], 0x0e, 0xbf, 0x0, 0x0, 0x3, 0x1, 0x0, 0x0, 0x4c, 0xc, 0x1d, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
+
+    cmd = bytes(data)
+    try:
+        ep.write(cmd)
+        usb_retry = False
+    except Exception as error:
+        usb_retry = True
+        print(f"error in commit data: {error}")
+
+
 fcu_device = None # usb /dev/inputx device
 
 datacache = {}
@@ -288,7 +338,10 @@ datarefs = [
     ("AirbusFBW/ALTmanaged", 2),
     ("sim/cockpit/autopilot/vertical_velocity", 5),
     ("sim/cockpit2/autopilot/fpa", 2),
-    ("AirbusFBW/APVerticalMode", 5) # EXPED light on for vsmode >= 112
+    ("AirbusFBW/APVerticalMode", 5), # EXPED light on for vsmode >= 112
+    ("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot", 2),
+    ("AirbusFBW/BaroStdFO", 2),
+    ("AirbusFBW/BaroUnitFO", 2)
   ]
 
 
@@ -372,7 +425,6 @@ def create_button_list_fcu():
         buttonlist.append(Button(61, "R_2 ADF", "sim/cockpit2/EFIS/EFIS_2_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_0))
         buttonlist.append(Button(62, "62", "", DREF_TYPE.NONE, BUTTON.NONE, Leds.LOC_GREEN))
         buttonlist.append(Button(63, "63", "", DREF_TYPE.NONE, BUTTON.NONE, Leds.LOC_GREEN))
-
 
 
 def RequestDataRefs(xp):
@@ -523,6 +575,8 @@ def set_datacache(values):
         spd_mach = datacache['sim/cockpit/autopilot/airspeed_is_mach']
         if spd_mach and v == 'sim/cockpit2/autopilot/airspeed_dial_kts_mach' and values[v] < 1:
             values[v] = (values[v] +0.005 ) * 100
+        if device_config & DEVICEMASK.EFISR and v == 'sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot' and values[v] < 100:
+            values[v] = (values[v] + 0.005) * 100
         if datacache[v] != int(values[v]):
             new = True
             print(f'cache: v:{v} val:{int(values[v])}')
@@ -583,6 +637,22 @@ def set_datacache(values):
                 winwing_fcu_set_led(fcu_out_endpoint, Leds.EXPED_GREEN, led_brightness * exped_led_state_desired)
 
         winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
+
+        if device_config & DEVICEMASK.EFISR:
+            std = datacache['AirbusFBW/BaroStdFO']
+            unit = datacache['AirbusFBW/BaroUnitFO']
+            flags['efisr_qnh'].value = not std
+            if std:
+                baro = 'Std '
+            else:
+                baro = datacache['sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot']
+                if unit:
+                   baro = int((baro * 33.86388 + 50) / 100)
+            flags['efisr_hpa_dec'].value = not unit and not std
+
+            #if baro_last == baro:
+            winwing_efisr_set_lcd(fcu_out_endpoint, baro)
+            baro_last = baro
 
 
 def kb_wait_quit_event():
@@ -650,6 +720,7 @@ def main():
 
     winwing_fcu_set_led(fcu_out_endpoint, Leds.SCREEN_BACKLIGHT, 180)
     winwing_fcu_set_lcd(fcu_out_endpoint, "   ", "   ", "Schen", " lap")
+    winwing_efisr_set_lcd(fcu_out_endpoint, '----')
 
     usb_event_thread = Thread(target=fcu_create_events, args=[fcu_in_endpoint, fcu_out_endpoint])
     usb_event_thread.start()
