@@ -59,7 +59,7 @@ class Leds(Enum):
     EXPED_YELLOW = 30 # 0 .. 255
     EFISR_BACKLIGHT = 100 # 0 .. 255
     EFISR_SCREEN_BACKLIGHT = 101 # 0 .. 255
-    #EFISR_LOC_GREEN = 102 # 0 .. 255
+    EFISR_FLAG_GREEN = 102 # 0 .. 255
     EFISR_FD_GREEN = 103
     EFISR_LS_GREEN = 104
     EFISR_CSTR_GREEN = 105
@@ -211,6 +211,14 @@ flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
 def swap_nibbles(x):
     return ( (x & 0x0F)<<4 | (x & 0xF0)>>4 )
 
+
+
+def winwing_fcu_set_leds(ep, leds, brightness):
+    if isinstance(leds, list):
+        for i in range(len(leds)):
+            winwing_fcu_set_led(ep, leds[i], brightness)
+    else:
+        winwing_fcu_set_led(ep, leds, brightness)
 
 def winwing_fcu_set_led(ep, led, brightness):
     if led.value < 100: # FCU
@@ -397,8 +405,8 @@ def create_button_list_fcu():
     buttonlist.append(Button(24, "VS PULL", "AirbusFBW/PullVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(25, "ALT 100", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_0))
     buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_1))
-    buttonlist.append(Button(27, "BRIGHT", "AirbusFBW/SupplLightLevelRehostats[0]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT))
-    buttonlist.append(Button(27, "BRIGHT_LCD", "AirbusFBW/SupplLightLevelRehostats[1]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT))
+    buttonlist.append(Button(27, "BRIGHT", "AirbusFBW/SupplLightLevelRehostats[0]", DREF_TYPE.DATA, BUTTON.NONE, [Leds.BACKLIGHT, Leds.EFISR_BACKLIGHT, Leds.FLAG_GREEN, Leds.EFISR_FLAG_GREEN]))
+    buttonlist.append(Button(27, "BRIGHT_LCD", "AirbusFBW/SupplLightLevelRehostats[1]", DREF_TYPE.DATA, BUTTON.NONE, [Leds.SCREEN_BACKLIGHT, Leds.EFISR_SCREEN_BACKLIGHT]))
     #buttonlist.append(Button(27, "BRIGHT", "sim/cockpit2/electrical/instrument_brightness_ratio_manual[14]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT)) # Laminar A330
     #buttonlist.append(Button(27, "BRIGHT_LCD", "sim/cockpit2/electrical/instrument_brightness_ratio_manual[10]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT)) # Laminar A330
     buttonlist.append(Button(28, "APPR_LED", "AirbusFBW/APPRilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.APPR_GREEN))
@@ -565,7 +573,7 @@ def set_button_led_lcd(dataref, v):
                 v = 255
             print(f'led: {b.led}, value: {v}')
 
-            winwing_fcu_set_led(fcu_out_endpoint, b.led, int(v))
+            winwing_fcu_set_leds(fcu_out_endpoint, b.led, int(v))
             if b.led == Leds.BACKLIGHT:
                 winwing_fcu_set_led(fcu_out_endpoint, Leds.EXPED_YELLOW, int(v))
                 print(f'set led brigthness: {b.led}, value: {v}')
