@@ -57,6 +57,16 @@ class Leds(Enum):
     APPR_GREEN = 13
     FLAG_GREEN = 17 # 0 .. 255
     EXPED_YELLOW = 30 # 0 .. 255
+    EFISR_BACKLIGHT = 100 # 0 .. 255
+    EFISR_SCREEN_BACKLIGHT = 101 # 0 .. 255
+    #EFISR_LOC_GREEN = 102 # 0 .. 255
+    EFISR_FD_GREEN = 103
+    EFISR_LS_GREEN = 104
+    EFISR_CSTR_GREEN = 105
+    EFISR_WPT_GREEN = 106
+    EFISR_VORD_GREEN = 107
+    EFISR_NDB_GREEN = 108
+    EFISR_ARPT_GREEN = 109
 
 
 class DREF_TYPE(Enum):
@@ -203,7 +213,10 @@ def swap_nibbles(x):
 
 
 def winwing_fcu_set_led(ep, led, brightness):
-    data = [0x02, 0x10, 0xbb, 0, 0, 3, 0x49, led.value, brightness, 0,0,0,0,0]
+    if led.value < 100: # FCU
+        data = [0x02, 0x10, 0xbb, 0, 0, 3, 0x49, led.value, brightness, 0,0,0,0,0]
+    else: # EFIS_R
+        data = [0x02, 0x0e, 0xbf, 0, 0, 3, 0x49, led.value - 100, brightness, 0,0,0,0,0]
     cmd = bytes(data)
     ep.write(cmd)
 
@@ -394,12 +407,12 @@ def create_button_list_fcu():
 
     if device_config & DEVICEMASK.EFISR:
         buttonlist.append(Button(32, "R_FD", "toliss_airbus/fd2_push", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
-        buttonlist.append(Button(33, "R_LS", "toliss_airbus/dispcommands/CoLSButtonPush", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
-        buttonlist.append(Button(34, "R_CSTR", "toliss_airbus/dispcommands/CoCstrPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
-        buttonlist.append(Button(35, "R_WPT", "toliss_airbus/dispcommands/CoWptPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
-        buttonlist.append(Button(36, "R_VOR.D", "toliss_airbus/dispcommands/CoVorDPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
-        buttonlist.append(Button(37, "R_NDB", "toliss_airbus/dispcommands/CoNdbPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
-        buttonlist.append(Button(38, "R_ARPT", "toliss_airbus/dispcommands/CoArptPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
+        buttonlist.append(Button(33, "R_LS", "toliss_airbus/dispcommands/CoLSButtonPush", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(34, "R_CSTR", "toliss_airbus/dispcommands/CoCstrPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(35, "R_WPT", "toliss_airbus/dispcommands/CoWptPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(36, "R_VOR.D", "toliss_airbus/dispcommands/CoVorDPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(37, "R_NDB", "toliss_airbus/dispcommands/CoNdbPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(38, "R_ARPT", "toliss_airbus/dispcommands/CoArptPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE))
         buttonlist.append(Button(39, "R_STD PUSH", "toliss_airbus/copilot_baro_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
         buttonlist.append(Button(40, "R_STD PULL", "toliss_airbus/copilot_baro_pull", DREF_TYPE.CMD, BUTTON.TOGGLE))
         buttonlist.append(Button(41, "R_PRESS DEC", "sim/instruments/barometer_down", DREF_TYPE.CMD, BUTTON.TOGGLE)) # TODO send 3 cmd in hPa mode
@@ -423,8 +436,15 @@ def create_button_list_fcu():
         buttonlist.append(Button(59, "R_2 VOR", "sim/cockpit2/EFIS/EFIS_2_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_2))
         buttonlist.append(Button(60, "R_2 OFF", "sim/cockpit2/EFIS/EFIS_2_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_1))
         buttonlist.append(Button(61, "R_2 ADF", "sim/cockpit2/EFIS/EFIS_2_selection_copilot", DREF_TYPE.DATA, BUTTON.SEND_0))
-        buttonlist.append(Button(62, "62", "", DREF_TYPE.NONE, BUTTON.NONE, Leds.LOC_GREEN))
-        buttonlist.append(Button(63, "63", "", DREF_TYPE.NONE, BUTTON.NONE, Leds.LOC_GREEN))
+        buttonlist.append(Button(62, "62", "AirbusFBW/NDShowARPTFO", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISR_ARPT_GREEN))
+        buttonlist.append(Button(63, "63", "AirbusFBW/NDShowNDBFO", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISR_NDB_GREEN))
+        buttonlist.append(Button(64, "64", "AirbusFBW/NDShowNDBFO", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISR_NDB_GREEN))
+        buttonlist.append(Button(65, "65", "AirbusFBW/NDShowVORDFO", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISR_VORD_GREEN))
+        buttonlist.append(Button(66, "66", "AirbusFBW/NDShowWPTFO", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISR_WPT_GREEN))
+        buttonlist.append(Button(67, "67", "AirbusFBW/NDShowCSTRFO", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISR_CSTR_GREEN))
+        buttonlist.append(Button(68, "68", "AirbusFBW/FD2Engage", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISR_FD_GREEN))
+        buttonlist.append(Button(69, "69", "AirbusFBW/ILSonFO", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISR_LS_GREEN))
+        buttonlist.append(Button(68, "68", "", DREF_TYPE.NONE, BUTTON.NONE, Leds.LOC_GREEN))
 
 
 def RequestDataRefs(xp):
