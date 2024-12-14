@@ -679,7 +679,9 @@ def set_datacache(values):
             flags['efisr_hpa_dec'].value = not unit and not std
 
             #if baro_last == baro:
+            sleep(0.05)
             winwing_efisr_set_lcd(fcu_out_endpoint, baro)
+            sleep(0.05)
             baro_last = baro
 
 
