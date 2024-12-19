@@ -423,8 +423,8 @@ def create_button_list_fcu():
         buttonlist.append(Button(38, "R_ARPT", "toliss_airbus/dispcommands/CoArptPushButton", DREF_TYPE.CMD, BUTTON.TOGGLE))
         buttonlist.append(Button(39, "R_STD PUSH", "toliss_airbus/copilot_baro_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
         buttonlist.append(Button(40, "R_STD PULL", "toliss_airbus/copilot_baro_pull", DREF_TYPE.CMD, BUTTON.TOGGLE))
-        buttonlist.append(Button(41, "R_PRESS DEC", "sim/instruments/barometer_down", DREF_TYPE.CMD, BUTTON.TOGGLE)) # TODO send 3 cmd in hPa mode
-        buttonlist.append(Button(42, "R_PRESS INC", "sim/instruments/barometer_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
+        buttonlist.append(Button(41, "R_PRESS DEC", "sim/instruments/barometer_copilot_down", DREF_TYPE.CMD, BUTTON.TOGGLE)) # TODO send 3 cmd in hPa mode
+        buttonlist.append(Button(42, "R_PRESS INC", "sim/instruments/barometer_copilot_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
         buttonlist.append(Button(43, "R_inHg", "AirbusFBW/BaroUnitFO", DREF_TYPE.DATA, BUTTON.SEND_0))
         buttonlist.append(Button(44, "R_hPa", "AirbusFBW/BaroUnitFO", DREF_TYPE.DATA, BUTTON.SEND_1))
         buttonlist.append(Button(45, "R_MODE LS", "AirbusFBW/NDmodeFO", DREF_TYPE.DATA, BUTTON.SEND_0))
