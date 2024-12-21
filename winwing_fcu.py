@@ -720,19 +720,24 @@ def main():
 
     backend = find_usblib()
 
-    device = usb.core.find(idVendor=0x4098, idProduct=0xbb10, backend=backend)
-    if device is None:
-        print(f"searching for Winwing FCU ... not found")
-        device = usb.core.find(idVendor=0x4098, idProduct=0xbc1e, backend=backend)
-        if device is None:
-            print(f"searching for Winwing FCU + EFIS-R ... not found")
-            raise RuntimeError('No device not found')
+    devlist = [{'vid':0x4098, 'pid':0xbb10, 'name':'FCU', 'mask':DEVICEMASK.FCU},
+               {'vid':0x4098, 'pid':0xbc1e, 'name':'FCU + EFIS-R', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISR},
+               {'vid':0x4098, 'pid':0x0000, 'name':'FCU + EFIS-L (EFIS-L not supported)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL},
+               {'vid':0x4098, 'pid':0xba01, 'name':'FCU + EFIS-L + EFIS-R (EFIS-L not supported)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL | DEVICEMASK.EFISR}]
+
+    for d in devlist:
+        print(f"now searching for winwing {d['name']} ... ", end='')
+        device = usb.core.find(idVendor=d['vid'], idProduct=d['pid'], backend=backend)
+        if device is not None:
+            print(f"found")
+            device_config |= d['mask']
+            break
         else:
-            device_config |= DEVICEMASK.FCU | DEVICEMASK.EFISR
-            print(f"searching for Winwing FCU + EFIS-R ... found")
-    else:
-        device_config |= DEVICEMASK.FCU
-        print(f"searching for Winwing FCU ... found")
+            print(f"not found")
+
+    if device is None:
+        exit(f"No compatible winwing device found, quit")
+
 
     print('compatible with X-Plane 11/12 and all Toliss Airbus')
 
