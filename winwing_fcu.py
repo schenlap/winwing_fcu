@@ -607,7 +607,7 @@ def fcu_create_events(ep_in, ep_out):
             if device_config & DEVICEMASK.EFISR:
                 buttons |= (data_in[9] << 32) | (data_in[10] << 40 ) | (data_in[11] << 48) | (data_in[12] << 56)
             if device_config & DEVICEMASK.EFISL:
-                buttons |= (data_in[13] << 64) | (data_in[14] << 72 ) | (data_in[15] << 80) | (data_in[16] << 88)
+                buttons |= (data_in[5] << 64) | (data_in[6] << 72 ) | (data_in[7] << 80) | (data_in[8] << 88)
             for i in range (BUTTONS_CNT):
                 mask = 0x01 << i
                 if xor_bitmask(buttons, buttons_last, mask):
