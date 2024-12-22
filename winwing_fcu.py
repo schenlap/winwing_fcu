@@ -529,7 +529,7 @@ def fcu_button_event():
     for b in buttonlist:
         if not any(buttons_press_event) and not any(buttons_release_event):
             break
-        if not b.id:
+        if b.id == None:
             continue
         if buttons_press_event[b.id]:
             buttons_press_event[b.id] = 0
