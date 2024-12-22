@@ -722,6 +722,7 @@ def set_datacache(values):
                 winwing_fcu_set_led(fcu_out_endpoint, Leds.EXPED_GREEN, led_brightness * exped_led_state_desired)
 
         winwing_fcu_set_lcd(fcu_out_endpoint, speed, heading, alt, vs)
+        sleep(0.05)
 
         if device_config & DEVICEMASK.EFISR:
             std = datacache['AirbusFBW/BaroStdFO']
@@ -735,11 +736,10 @@ def set_datacache(values):
                    baro = int((baro * 33.86388 + 50) / 100)
             flags['efisr_hpa_dec'].value = not unit and not std
 
-            #if baro_last == baro:
-            sleep(0.05)
-            winwing_efisr_set_lcd(fcu_out_endpoint, baro)
-            sleep(0.05)
-            baro_last = baro
+            if datacache['baro_efisr_last'] != baro:
+                winwing_efisr_set_lcd(fcu_out_endpoint, baro)
+                sleep(0.05)
+                datacache['baro_efisr_last'] = baro
         # TODO EFISL
 
 
@@ -800,6 +800,8 @@ def main():
     print('compatible with X-Plane 11/12 and all Toliss Airbus')
 
     create_button_list_fcu()
+    datacache['baro_efisr_last'] = None
+    datacache['baro_efisl_last'] = None
 
     interface = device[0].interfaces()[0]
     if device.is_kernel_driver_active(interface.bInterfaceNumber):
