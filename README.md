@@ -7,6 +7,11 @@ Tested with:
  * XP12 under MacOs (Sequoia 15.0.1)
  * Toliss A319, A320Neo, A321Neo, A339
 
+Supported Hardware:
+ * Winwing FCU: full supported
+ * Winwing EFIS-R: full supported
+ * Winwing EFIS-L: only buttons and switches supported, no lcd and no leds
+
 ## Installation
 
 #### Debian based system
