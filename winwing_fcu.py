@@ -239,8 +239,9 @@ def winwing_fcu_set_led(ep, led, brightness):
         #TODO set leds EFSIL
         print(f"setting leds on EFISL not supported")
         return
-    cmd = bytes(data)
-    ep.write(cmd)
+    if 'data' in locals():
+      cmd = bytes(data)
+      ep.write(cmd)
 
 
 def lcd_init(ep):
@@ -812,9 +813,15 @@ def main():
     endpoints = device[0].interfaces()[0].endpoints()
     fcu_out_endpoint = endpoints[1]
     fcu_in_endpoint = endpoints[0]
+    
+    leds = [Leds.SCREEN_BACKLIGHT]
+    if device_config & DEVICEMASK.EFISR:
+      leds.append(Leds.EFISR_BACKLIGHT)
+    if device_config & DEVICEMASK.EFISL:
+      leds.append(Leds.EFISL_BACKLIGHT)
 
-    winwing_fcu_set_leds(fcu_out_endpoint, [Leds.SCREEN_BACKLIGHT, Leds.EFISR_SCREEN_BACKLIGHT], 180)
-    winwing_fcu_set_leds(fcu_out_endpoint, [Leds.BACKLIGHT, Leds.EFISR_BACKLIGHT], 80)
+    winwing_fcu_set_leds(fcu_out_endpoint, leds, 180)
+    winwing_fcu_set_leds(fcu_out_endpoint, leds, 80)
     winwing_fcu_set_lcd(fcu_out_endpoint, "   ", "   ", "Schen", " lap")
     if device_config & DEVICEMASK.EFISR:
         winwing_efisr_set_lcd(fcu_out_endpoint, '----')
