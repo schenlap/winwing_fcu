@@ -8,8 +8,8 @@ Tested with:
  * Toliss A319, A320Neo, A321Neo, A339, A340-600
 
 Supported Hardware:
- * Winwing FCU: full supported
- * Winwing EFIS-R: full supported
+ * Winwing FCU: fully supported
+ * Winwing EFIS-R: fully supported
  * Winwing EFIS-L: only buttons and switches supported, no lcd and no leds
 
 ## Installation
@@ -54,5 +54,4 @@ Use at your own risk. Updates to the FCU can make the script incompatible.
 TODO: The data sent in the USB protocol by SimApp Pro has not yet been fully implemented, only to the extent that it currently works.
 
 ## Next steps
- * wait for running x-plane
- * add EFIS co-pilot side when my EFIS arrives (~dezember)
+ * EFIS-L LCD and LEDs when EFIS-L arrives (first only for supporters of this project)
