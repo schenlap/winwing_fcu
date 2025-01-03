@@ -55,3 +55,6 @@ TODO: The data sent in the USB protocol by SimApp Pro has not yet been fully imp
 
 ## Next steps
  * EFIS-L LCD and LEDs when EFIS-L arrives (first only for supporters of this project)
+
+## Contact
+<memo5@gmx.at> or as pm in https://forums.x-plane.org, user memo5.
