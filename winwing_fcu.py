@@ -24,7 +24,7 @@ import usb.util
 
 import XPlaneUdp
 
-VERSION = 'V0.6'
+VERSION = 'V0.6+'
 
 BUTTONS_CNT = 32+32+32 # FCU:32, EFISR:32, EFISL:32
 
