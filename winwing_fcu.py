@@ -24,6 +24,8 @@ import usb.util
 
 import XPlaneUdp
 
+VERSION = 'V0.6'
+
 BUTTONS_CNT = 32+32+32 # FCU:32, EFISR:32, EFISL:32
 
 #@unique
@@ -777,6 +779,8 @@ def main():
     global values, xplane_connected
     global device_config
 
+    print(f"starting winwing_fcu, {VERSION}")
+
     backend = find_usblib()
 
     devlist = [{'vid':0x4098, 'pid':0xbb10, 'name':'FCU', 'mask':DEVICEMASK.FCU},
@@ -785,7 +789,7 @@ def main():
                {'vid':0x4098, 'pid':0xba01, 'name':'FCU + EFIS-L + EFIS-R (EFIS-L not supported)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL | DEVICEMASK.EFISR}]
 
     for d in devlist:
-        print(f"now searching for winwing {d['name']} ... ", end='')
+        print(f"searching for winwing {d['name']} ... ", end='')
         device = usb.core.find(idVendor=d['vid'], idProduct=d['pid'], backend=backend)
         if device is not None:
             print(f"found")
