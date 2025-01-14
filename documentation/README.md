@@ -297,7 +297,7 @@ I wrote a [dissector ](..//wireshark_winwing_dissector.lua) for wirehark to pars
 |--------|---------|----------|---------|----------|---------|----------|----|---|----------|----------|---------|----------|---------|
 | 0x02 | 0xf0 | 0xbe | 0x00 | 0x00 | 0x03 | 0x49 | x | x | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 |
 
-A winwing device has many components. for example:
+A winwing device is a logic group of components. Cmd/Data controls are only applied to component. A winwing device has many components. for example:
 ```
 F18_GRIP:
   - WINWING_JOYSTICK_BASE1
@@ -305,6 +305,8 @@ F18_GRIP:
   - JOYSTICK_BASE2_2
 ```
 Each component has its own ID that can be used to send cmd/data to it. Different devices may share same components, so we could use the same componentID to route cmd/data to it. At this time, it is not clear what the magic `0x49` means.
+
+If a standalone component is considered to be a device, like FCU. 
 
 ### Component ID
 
