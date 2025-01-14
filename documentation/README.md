@@ -289,3 +289,105 @@ to start sniffing:
 
 I wrote a [dissector ](..//wireshark_winwing_dissector.lua) for wirehark to parse the winwing protocol. Copy it to `~/.local/lib/wireshark/plugins/`to let wireshark use it. It will be use automtically for received usb data.
 ![winwing dissector](./dissector.png)
+
+
+## Winwing Protocol (all devices)
+
+| Report ID |ComponentID(1)|ComponentId(0)| | | Length Of Data | ? | led number | brightness | | | | | |
+|--------|---------|----------|---------|----------|---------|----------|----|---|----------|----------|---------|----------|---------|
+| 0x02 | 0xf0 | 0xbe | 0x00 | 0x00 | 0x03 | 0x49 | x | x | 0x00 | 0x00 | 0x00 | 0x00 | 0x00 |
+
+A winwing device has many components. for example:
+```
+F18_GRIP:
+  - WINWING_JOYSTICK_BASE1
+  - JOYSTICK_BASE2
+  - JOYSTICK_BASE2_2
+```
+Each component has its own ID that can be used to send cmd/data to it. Different devices may share same components, so we could use the same componentID to route cmd/data to it. At this time, it is not clear what the magic `0x49` means.
+
+### Component ID
+
+>Note: some of these are not recorded in HEX
+
+>Note: if a componentId is `0xBB20`, the componentId(0) would be `20` and componentId(1) would be `bb`
+
+|Name|ComponentID|
+|----|---|
+|F18_STARTUP_PANEL|48643|
+|WINWING_THROTTLE_BASE1|48672|
+|WINWING_THROTTLE_BASE1_F18_HANDLE|48674|
+|F18_HANDLE|48642|
+|WINWING_JOYSTICK_BASE1|48656|
+|JOYSTICK_BASE1_F18_GRIP|48657|
+|JOYSTICK_BASE1_ZAXIS|48660|
+|JOYSTICK_BASE1_ZAXIS_F18_GRIP|48661|
+|F18_GRIP|48641|
+|F18_TAKEOFF_PANEL|0xBE04|
+|F18_COMBAT_READY_PANEL|0xBE05|
+|WINWING_THROTTLE_BASE2|0xBE30|
+|Orion_Throttle_Base_II|0xBE60|
+|WINWING_THROTTLE_BASE2_F18_HANDLE|0xBE32|
+|TM_GRIP|0x4021|
+|JOYSTICK_BASE2|0x0000BE40|
+|JOYSTICK_BASE2_F18_GRIP|0x0000BE41|
+|JOYSTICK_BASE2_ZAXIS|0x0000BE44|
+|JOYSTICK_BASE2_ZAXIS_F18_GRIP|0x0000BE45|
+|JOYSTICK_BASE2_2|0x0000BEA0|
+|CGRIP_KA50|0xBE06|
+|T3_BASE|0xBE50|
+|JGRIP_320|0x1640|
+|JGRIP_F16|0xBE07|
+|TGRIP_F16|0xBE08|
+|MFSSB|0xBE0C|
+|MFD1|0xBE0D|
+|UFC1|0xbed0|
+|HUD1|48654|
+|F15EX_HANDLE_L|0xBF0|
+|F15EX_HANDLE_R|0xBF0|
+|F15_HANDLE_R|0xBF0|
+|F15_HANDLE_L|0xBF0|
+|TAKEOFF_PLANEL_2|0xBF0|
+|R1|0xBEF|
+|ICP|0xBF0|
+|JGRIP_C1_L|0xBF0|
+|JGRIP_C1_R|0x0BF0|
+|J5_BASE|0xBB2|
+|FCU|0xBB1|
+|JGRIP_F1_L|0xBF0|
+|JGRIP_F1_R|0xBF0|
+|JGRIP_S1_L|0xBF0|
+|JGRIP_S1_R|0xBF0|
+|EFIS_320_L|0xBF0|
+|EFIS_320_R|0xBF0|
+|PFP_3N|0xBB3|
+|MCDU_32|0xBB3|
+|PFP_7|0xBB3|
+|PFP_4|0xBB3|
+|MCP_73|0xBF0|
+
+### Device - Components
+|Device|Components|
+|---|---|
+|F18_HANDLE|[WINWING_THROTTLE_BASE1, WINWING_THROTTLE_BASE2, Orion_Throttle_Base_II, T3_BASE]|
+|F18_GRIP|[WINWING_JOYSTICK_BASE1, JOYSTICK_BASE2, JOYSTICK_BASE2_2]|
+|TM_GRIP|[WINWING_JOYSTICK_BASE1, JOYSTICK_BASE2, JOYSTICK_BASE2_2]|
+|CGRIP_KA50|[WINWING_THROTTLE_BASE2, Orion_Throttle_Base_II, T3_BASE, WINWING_THROTTLE_BASE1]|
+|JGRIP_320|[WINWING_JOYSTICK_BASE1, JOYSTICK_BASE2, JOYSTICK_BASE2_2]|
+|JGRIP_F16|[WINWING_JOYSTICK_BASE1, JOYSTICK_BASE2, JOYSTICK_BASE2_2]|
+|TGRIP_F16|[WINWING_THROTTLE_BASE2, Orion_Throttle_Base_II, T3_BASE, WINWING_THROTTLE_BASE1]|
+|MFSSB|[JOYSTICK_BASE2_2]|
+|HUD1|[UFC1]|
+|F15EX_HANDLE_L|[WINWING_THROTTLE_BASE1,WINWING_THROTTLE_BASE2,T3_BASE,Orion_Throttle_Base_II]|
+|F15EX_HANDLE_R|[WINWING_THROTTLE_BASE1,WINWING_THROTTLE_BASE2,T3_BASE,Orion_Throttle_Base_II]|
+|F15_HANDLE_R|[WINWING_THROTTLE_BASE1,WINWING_THROTTLE_BASE2,T3_BASE,Orion_Throttle_Base_II]|
+|JGRIP_C1_L|[J5_BASE]|
+|JGRIP_C1_R|[J5_BASE]|
+|JGRIP_F1_L|[J5_BASE]|
+|JGRIP_F1_R|[J5_BASE]|
+|JGRIP_S1_L|[J5_BASE]|
+|JGRIP_S1_R|[J5_BASE]|
+|EFIS_320_L|[FCU]|
+|EFIS_320_R|[FCU]|
+
+
