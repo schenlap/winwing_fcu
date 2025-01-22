@@ -217,6 +217,9 @@ flags = dict([("spd", Flag('spd-mach_spd', Byte.H3, 0x08)),
               ("efisr_qfe", Flag('efisr_qfe', Byte.EFISR_B0, 0x01)), # TODO: don't know when to set this
               ("efisr_qnh", Flag('efisr_qnh', Byte.EFISR_B0, 0x02)),
               ("efisr_hpa_dec", Flag('efisr_hpa_dec', Byte.EFISR_B2, 0x80)),
+              ("efisl_qfe", Flag('efisl_qfe', Byte.EFISL_B0, 0x01)), # TODO: don't know when to set this
+              ("efisl_qnh", Flag('efisl_qnh', Byte.EFISL_B0, 0x02)),
+              ("efisl_hpa_dec", Flag('efisl_hpa_dec', Byte.EFISL_B2, 0x80)),
               ])
 
 
@@ -238,9 +241,7 @@ def winwing_fcu_set_led(ep, led, brightness):
     elif led.value < 200 and device_config & DEVICEMASK.EFISR: # EFIS_R
         data = [0x02, 0x0e, 0xbf, 0, 0, 3, 0x49, led.value - 100, brightness, 0,0,0,0,0]
     elif device_config & DEVICEMASK.EFISL: # EFIS_L
-        #TODO set leds EFSIL
-        print(f"setting leds on EFISL not supported")
-        return
+        data = [0x02, 0x0d, 0xbf, 0, 0, 3, 0x49, led.value - 200, brightness, 0,0,0,0,0]
     if 'data' in locals():
       cmd = bytes(data)
       ep.write(cmd)
@@ -350,6 +351,31 @@ def winwing_efisr_set_lcd(ep, baro):
     cmd = bytes(data)
     try:
         ep.write(cmd)
+        sleep(0.005)
+        usb_retry = False
+    except Exception as error:
+        usb_retry = True
+        print(f"error in commit data: {error}")
+
+
+def winwing_efisl_set_lcd(ep, baro):
+    global usb_retry
+    b = data_from_string_swapped_efis( 4, string_fix_length(baro, 4))
+
+    bl = [0] * len(Byte)
+    for f in flags:
+        bl[flags[f].byte.value] |= (flags[f].mask * flags[f].value)
+
+    pkg_nr = 1
+
+#                                                              alwa  unknown3   chksum    unknown4 nown5  cmd2    ZZZEEEERRROoooo                  seg 1    2     3     4
+    data = [0xf0, 0x0, pkg_nr, 0x1a, 0x0d, 0xbf, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x1d, 0x0, 0x0, 0x9, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, b[3], b[2] | bl[Byte.EFISL_B2.value], b[1], b[0], bl[Byte.EFISL_B0.value], 0x0e, 0xbf, 0x0, 0x0, 0x3, 0x1, 0x0, 0x0, 0x4c, 0xc, 0x1d, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0]
+
+    cmd = bytes(data)
+    try:
+        ep.write(cmd)
+        sleep(0.005)
+        
         usb_retry = False
     except Exception as error:
         usb_retry = True
@@ -378,8 +404,11 @@ datarefs = [
     ("sim/cockpit2/autopilot/fpa", 2),
     ("AirbusFBW/APVerticalMode", 5), # EXPED light on for vsmode >= 112
     ("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot", 2),
+    ("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot", 2),
     ("AirbusFBW/BaroStdFO", 2),
-    ("AirbusFBW/BaroUnitFO", 2)
+    ("AirbusFBW/BaroUnitFO", 2),
+    ("AirbusFBW/BaroStdCapt", 2),
+    ("AirbusFBW/BaroUnitCapt", 2)
   ]
 
 
@@ -501,14 +530,14 @@ def create_button_list_fcu():
         buttonlist.append(Button(91, "L_2 ADF", "sim/cockpit2/EFIS/EFIS_2_selection_pilot", DREF_TYPE.DATA, BUTTON.SEND_0))
         buttonlist.append(Button(92, "L_2 OFF", "sim/cockpit2/EFIS/EFIS_2_selection_pilot", DREF_TYPE.DATA, BUTTON.SEND_1))
         buttonlist.append(Button(93, "L_2 VOR", "sim/cockpit2/EFIS/EFIS_2_selection_pilot", DREF_TYPE.DATA, BUTTON.SEND_2))
-        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowARPTCapt", DREF_TYPE.DATA, BUTTON.NONE)) #, Leds.EFISR_ARPT_GREEN))
-        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowNDBCapt", DREF_TYPE.DATA, BUTTON.NONE)) #, Leds.EFISR_NDB_GREEN))
-        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowNDBCapt", DREF_TYPE.DATA, BUTTON.NONE)) #, Leds.EFISR_NDB_GREEN))
-        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowVORDCapt", DREF_TYPE.DATA, BUTTON.NONE)) #, Leds.EFISR_VORD_GREEN))
-        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowWPTCapt", DREF_TYPE.DATA, BUTTON.NONE)) #, Leds.EFISR_WPT_GREEN))
-        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowCSTRCapt", DREF_TYPE.DATA, BUTTON.NONE)) #, Leds.EFISR_CSTR_GREEN))
-        buttonlist.append(Button(None, "None", "AirbusFBW/FD1Engage", DREF_TYPE.DATA, BUTTON.NONE)) #, Leds.EFISR_FD_GREEN))
-        buttonlist.append(Button(None, "None", "AirbusFBW/ILSonCapt", DREF_TYPE.DATA, BUTTON.NONE)) #, Leds.EFISR_LS_GREEN))
+        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowARPTCapt", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_ARPT_GREEN))
+        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowNDBCapt", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_NDB_GREEN))
+        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowNDBCapt", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_NDB_GREEN))
+        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowVORDCapt", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_VORD_GREEN))
+        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowWPTCapt", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_WPT_GREEN))
+        buttonlist.append(Button(None, "None", "AirbusFBW/NDShowCSTRCapt", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_CSTR_GREEN))
+        buttonlist.append(Button(None, "None", "AirbusFBW/FD1Engage", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_FD_GREEN))
+        buttonlist.append(Button(None, "None", "AirbusFBW/ILSonCapt", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_LS_GREEN))
 
 
 def RequestDataRefs(xp):
@@ -665,6 +694,8 @@ def set_datacache(values):
             values[v] = (values[v] +0.005 ) * 100
         if device_config & DEVICEMASK.EFISR and v == 'sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot' and values[v] < 100:
             values[v] = (values[v] + 0.005) * 100
+        if device_config & DEVICEMASK.EFISL and v == 'sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot' and values[v] < 100:
+            values[v] = (values[v] + 0.005) * 100
         if datacache[v] != int(values[v]):
             new = True
             print(f'cache: v:{v} val:{int(values[v])}')
@@ -743,7 +774,22 @@ def set_datacache(values):
                 winwing_efisr_set_lcd(fcu_out_endpoint, baro)
                 sleep(0.05)
                 datacache['baro_efisr_last'] = baro
-        # TODO EFISL
+        if device_config & DEVICEMASK.EFISL:
+            std = datacache['AirbusFBW/BaroStdCapt']
+            unit = datacache['AirbusFBW/BaroUnitCapt']
+            flags['efisl_qnh'].value = not std
+            if std:
+                baro = 'Std '
+            else:
+                baro = datacache['sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot']
+                if unit:
+                   baro = int((baro * 33.86388 + 50) / 100)
+            flags['efisl_hpa_dec'].value = not unit and not std
+
+            if datacache['baro_efisl_last'] != baro:
+                winwing_efisr_set_lcd(fcu_out_endpoint, baro)
+                sleep(0.05)
+                datacache['baro_efisl_last'] = baro
 
 
 def kb_wait_quit_event():
@@ -785,8 +831,8 @@ def main():
 
     devlist = [{'vid':0x4098, 'pid':0xbb10, 'name':'FCU', 'mask':DEVICEMASK.FCU},
                {'vid':0x4098, 'pid':0xbc1e, 'name':'FCU + EFIS-R', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISR},
-               {'vid':0x4098, 'pid':0xbc1d, 'name':'FCU + EFIS-L (EFIS-L not supported)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL},
-               {'vid':0x4098, 'pid':0xba01, 'name':'FCU + EFIS-L + EFIS-R (EFIS-L not supported)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL | DEVICEMASK.EFISR}]
+               {'vid':0x4098, 'pid':0xbc1d, 'name':'FCU + EFIS-L (EFIS-L lcd and led test)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL},
+               {'vid':0x4098, 'pid':0xba01, 'name':'FCU + EFIS-L + EFIS-R (EFIS-L lcd and led test)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL | DEVICEMASK.EFISR}]
 
     for d in devlist:
         print(f"searching for winwing {d['name']} ... ", end='')
@@ -829,7 +875,8 @@ def main():
     winwing_fcu_set_lcd(fcu_out_endpoint, "   ", "   ", "Schen", " lap")
     if device_config & DEVICEMASK.EFISR:
         winwing_efisr_set_lcd(fcu_out_endpoint, '----')
-    #TODO set EFISL
+    if device_config & DEVICEMASK.EFISL:
+        winwing_efisl_set_lcd(fcu_out_endpoint, '----')
 
     usb_event_thread = Thread(target=fcu_create_events, args=[fcu_in_endpoint, fcu_out_endpoint])
     usb_event_thread.start()
