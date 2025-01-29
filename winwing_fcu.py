@@ -787,7 +787,7 @@ def set_datacache(values):
             flags['efisl_hpa_dec'].value = not unit and not std
 
             if datacache['baro_efisl_last'] != baro:
-                winwing_efisr_set_lcd(fcu_out_endpoint, baro)
+                winwing_efisl_set_lcd(fcu_out_endpoint, baro)
                 sleep(0.05)
                 datacache['baro_efisl_last'] = baro
 
