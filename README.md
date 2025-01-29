@@ -10,7 +10,7 @@ Tested with:
 Supported Hardware:
  * Winwing FCU: fully supported
  * Winwing EFIS-R: fully supported
- * Winwing EFIS-L: only buttons and switches supported, no lcd and no leds
+ * Winwing EFIS-L: fully supported
 
 ## Installation
 
