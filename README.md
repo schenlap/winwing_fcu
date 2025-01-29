@@ -54,7 +54,7 @@ Use at your own risk. Updates to the FCU can make the script incompatible.
 TODO: The data sent in the USB protocol by SimApp Pro has not yet been fully implemented, only to the extent that it currently works.
 
 ## Next steps
- * EFIS-L LCD and LEDs when EFIS-L arrives (first only for supporters of this project)
+ * remove libusb dependency
 
 ## Contact
 <memo_5_@gmx.at> (without the two underscores!) or as pm in https://forums.x-plane.org, user memo5.
