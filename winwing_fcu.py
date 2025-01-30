@@ -240,7 +240,7 @@ def winwing_fcu_set_led(ep, led, brightness):
         data = [0x02, 0x10, 0xbb, 0, 0, 3, 0x49, led.value, brightness, 0,0,0,0,0]
     elif led.value < 200 and device_config & DEVICEMASK.EFISR: # EFIS_R
         data = [0x02, 0x0e, 0xbf, 0, 0, 3, 0x49, led.value - 100, brightness, 0,0,0,0,0]
-    elif device_config & DEVICEMASK.EFISL: # EFIS_L
+    elif led.value >= 200 and led.value < 300 and device_config & DEVICEMASK.EFISL: # EFIS_L
         data = [0x02, 0x0d, 0xbf, 0, 0, 3, 0x49, led.value - 200, brightness, 0,0,0,0,0]
     if 'data' in locals():
       cmd = bytes(data)
