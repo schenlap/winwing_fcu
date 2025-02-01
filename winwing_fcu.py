@@ -697,12 +697,12 @@ def set_datacache(values):
         if v == 'BRIGHT_LCD' and values[vdref] <= 1:
             # brightness is in 0..1, we need 0..255
             values[vdref] = int(values[vdref] * 235 + 20)
-        if v == 'instrument_brightness_ratio_manual[10]' and values[vdref] <= 1:
-            # brightness is in 0..1, we need 0..255
-            values[vdref] = int(values[vdref] * 255)
-        if v == 'instrument_brightness_ratio_manual[14]' and values[vdref] <= 1:
-            # brightness is in 0..1, we need 0..255
-            values[vdref] = int(values[vdref] * 255)
+        #if v == 'instrument_brightness_ratio_manual[10]' and values[vdref] <= 1:
+        #    # brightness is in 0..1, we need 0..255
+        #    values[vdref] = int(values[vdref] * 255)
+        #if v == 'instrument_brightness_ratio_manual[14]' and values[vdref] <= 1:
+        #    # brightness is in 0..1, we need 0..255
+        #    values[vdref] = int(values[vdref] * 255)
         spd_mach = datacache['airspeed_is_mach']
         if spd_mach and v == 'airspeed_dial_kts_mach' and values[vdref] < 1:
             values[vdref] = (values[vdref] +0.005 ) * 100
