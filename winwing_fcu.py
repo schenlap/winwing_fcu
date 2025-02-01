@@ -39,7 +39,7 @@ class DEVICEMASK(IntEnum):
     EFISL = 4
 
 
-class BUTTON(Enum):
+class BUTTON(IntEnum):
     SWITCH = 0
     TOGGLE = 1
     SEND_0 = 2
@@ -48,7 +48,13 @@ class BUTTON(Enum):
     SEND_3 = 5
     SEND_4 = 6
     SEND_5 = 7
-    NONE = 5 # for testing
+    READ_1 = 8
+    READ_2 = 9
+    READ_3 = 10
+    READ_4 = 11
+    READ_5 = 12
+    READ_6 = 13
+    NONE = 14 # for testing
 
 
 class Leds(Enum):
@@ -389,32 +395,6 @@ fcu_device = None # usb /dev/inputx device
 
 datacache = {}
 
-# List of datarefs without led connection to request.
-datarefs = [
-    ("AirbusFBW/HDGdashed", 2),
-    ("AirbusFBW/SPDdashed", 2),
-    ("AirbusFBW/VSdashed", 2),
-    ("sim/cockpit/autopilot/airspeed", 2),
-    ("sim/cockpit2/autopilot/airspeed_dial_kts_mach", 5),
-    ("AirbusFBW/SPDmanaged", 2),
-    ("sim/cockpit/autopilot/airspeed_is_mach", 2),
-    ("sim/cockpit/autopilot/heading_mag", 5),
-    ("AirbusFBW/HDGmanaged", 2),
-    ("AirbusFBW/HDGTRKmode", 2),
-    ("sim/cockpit/autopilot/altitude", 5),
-    ("AirbusFBW/ALTmanaged", 2),
-    ("sim/cockpit/autopilot/vertical_velocity", 5),
-    ("sim/cockpit2/autopilot/fpa", 2),
-    ("AirbusFBW/APVerticalMode", 5), # EXPED light on for vsmode >= 112
-    ("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot", 2),
-    ("sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot", 2),
-    ("AirbusFBW/BaroStdFO", 2),
-    ("AirbusFBW/BaroUnitFO", 2),
-    ("AirbusFBW/BaroStdCapt", 2),
-    ("AirbusFBW/BaroUnitCapt", 2)
-  ]
-
-
 buttons_press_event = [0] * BUTTONS_CNT
 buttons_release_event = [0] * BUTTONS_CNT
 
@@ -428,9 +408,6 @@ xp = None
 
 def create_button_list_fcu():
     global buttonlist
-    device_config = DEVICEMASK.FCU
-    device_config |= DEVICEMASK.EFISL
-    device_config |= DEVICEMASK.EFISR
     buttonlist.append(Button(0, "MACH", BUTTON.TOGGLE))
     buttonlist.append(Button(1, "LOC", BUTTON.TOGGLE))
     buttonlist.append(Button(2, "TRK", BUTTON.TOGGLE))
@@ -465,9 +442,30 @@ def create_button_list_fcu():
     buttonlist.append(Button(28, "APPR_LED", BUTTON.NONE, Leds.APPR_GREEN))
     buttonlist.append(Button(29, "ATHR_LED", BUTTON.NONE, Leds.ATHR_GREEN))
     buttonlist.append(Button(30, "LOC_LED", BUTTON.NONE, Leds.LOC_GREEN))
+    buttonlist.append(Button(None, "HDGdashed", BUTTON.READ_2))
+    buttonlist.append(Button(None, "SPDdashed", BUTTON.READ_2))
+    buttonlist.append(Button(None, "VSdashed", BUTTON.READ_2))
+    buttonlist.append(Button(None, "airspeed", BUTTON.READ_5))
+    buttonlist.append(Button(None, "airspeed_dial_kts_mach", BUTTON.READ_2))
+    buttonlist.append(Button(None, "SPDmanaged", BUTTON.READ_2))
+    buttonlist.append(Button(None, "airspeed_is_mach", BUTTON.READ_2))
+    buttonlist.append(Button(None, "heading_mag", BUTTON.READ_5))
+    buttonlist.append(Button(None, "HDGmanaged", BUTTON.READ_2))
+    buttonlist.append(Button(None, "HDGTRKmode", BUTTON.READ_2))
+    buttonlist.append(Button(None, "altitude", BUTTON.READ_5))
+    buttonlist.append(Button(None, "ALTmanaged", BUTTON.READ_2))
+    buttonlist.append(Button(None, "vertical_velocity", BUTTON.READ_5))
+    buttonlist.append(Button(None, "fpa", BUTTON.READ_2))
+    buttonlist.append(Button(None, "APVerticalMode", BUTTON.READ_2))
+    buttonlist.append(Button(None, "barometer_setting_in_hg_copilot", BUTTON.READ_2))
+    buttonlist.append(Button(None, "barometer_setting_in_hg_pilot", BUTTON.READ_2))
+    buttonlist.append(Button(None, "BaroStdFO", BUTTON.READ_2))
+    buttonlist.append(Button(None, "BaroUnitFO", BUTTON.READ_2))
+    buttonlist.append(Button(None, "BaroStdCapt", BUTTON.READ_2))
+    buttonlist.append(Button(None, "BaroUnitCapt", BUTTON.READ_2))
 
     if device_config & DEVICEMASK.EFISR:
-        buttonlist.append(Button(32, "R_FD", Leds.LOC_GREEN))
+        buttonlist.append(Button(32, "R_FD", BUTTON.TOGGLE))
         buttonlist.append(Button(33, "R_LS", BUTTON.TOGGLE))
         buttonlist.append(Button(34, "R_CSTR", BUTTON.TOGGLE))
         buttonlist.append(Button(35, "R_WPT", BUTTON.TOGGLE))
@@ -497,15 +495,13 @@ def create_button_list_fcu():
         buttonlist.append(Button(59, "R_2 VOR", BUTTON.SEND_2))
         buttonlist.append(Button(60, "R_2 OFF", BUTTON.SEND_1))
         buttonlist.append(Button(61, "R_2 ADF", BUTTON.SEND_0))
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISR_ARPT_GREEN)) # TODO
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISR_NDB_GREEN))
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISR_NDB_GREEN))
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISR_VORD_GREEN))
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISR_WPT_GREEN))
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISR_CSTR_GREEN))
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISR_FD_GREEN))
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISR_LS_GREEN))
-        #buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.LOC_GREEN))
+        buttonlist.append(Button(None, "R_ARPT_IND", BUTTON.NONE, Leds.EFISR_ARPT_GREEN))
+        buttonlist.append(Button(None, "R_NDB_IND", BUTTON.NONE, Leds.EFISR_NDB_GREEN))
+        buttonlist.append(Button(None, "R_VORD_IND", BUTTON.NONE, Leds.EFISR_VORD_GREEN))
+        buttonlist.append(Button(None, "R_WPT_IND", BUTTON.NONE, Leds.EFISR_WPT_GREEN))
+        buttonlist.append(Button(None, "R_CSTR_IND", BUTTON.NONE, Leds.EFISR_CSTR_GREEN))
+        buttonlist.append(Button(None, "R_FD_IND", BUTTON.NONE, Leds.EFISR_FD_GREEN))
+        buttonlist.append(Button(None, "R_LS_IND", BUTTON.NONE, Leds.EFISR_LS_GREEN))
     if device_config & DEVICEMASK.EFISL:
         buttonlist.append(Button(64, "L_FD", BUTTON.TOGGLE))
         buttonlist.append(Button(65, "L_LS", BUTTON.TOGGLE))
@@ -537,14 +533,13 @@ def create_button_list_fcu():
         buttonlist.append(Button(91, "L_2 ADF", BUTTON.SEND_0))
         buttonlist.append(Button(92, "L_2 OFF", BUTTON.SEND_1))
         buttonlist.append(Button(93, "L_2 VOR", BUTTON.SEND_2))
-        # buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISL_ARPT_GREEN)) # TODO
-        # buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISL_NDB_GREEN))
-        # buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISL_NDB_GREEN))
-        # buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISL_VORD_GREEN))
-        # buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISL_WPT_GREEN))
-        # buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISL_CSTR_GREEN))
-        # buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISL_FD_GREEN))
-        # buttonlist.append(Button(None, "None", BUTTON.NONE, Leds.EFISL_LS_GREEN))
+        buttonlist.append(Button(None, "L_ARPT_IND", BUTTON.NONE, Leds.EFISL_ARPT_GREEN))
+        buttonlist.append(Button(None, "L_NDB_IND", BUTTON.NONE, Leds.EFISL_NDB_GREEN))
+        buttonlist.append(Button(None, "L_VORD_IND", BUTTON.NONE, Leds.EFISL_VORD_GREEN))
+        buttonlist.append(Button(None, "L_WPT_IND", BUTTON.NONE, Leds.EFISL_WPT_GREEN))
+        buttonlist.append(Button(None, "L_CSTR_IND", BUTTON.NONE, Leds.EFISL_CSTR_GREEN))
+        buttonlist.append(Button(None, "L_FD_IND", BUTTON.NONE, Leds.EFISL_FD_GREEN))
+        buttonlist.append(Button(None, "L_LS_IND", BUTTON.NONE, Leds.EFISL_LS_GREEN))
 
     acf = aircraft_toliss.Toliss_A319()
     acf.create_aircraft()
@@ -554,20 +549,17 @@ def create_button_list_fcu():
                 buttonlist[bidx].dataref = d.dref
                 buttonlist[bidx].dreftype = d.dreftype
                 break
-    for b in buttonlist:
-        if b.label != "None":
-            print(f"self.drefs.append(DREF(\"{b.label}\", \"{b.dataref}\", {b.dreftype}))")
+
 
 def RequestDataRefs(xp):
     for idx,b in enumerate(buttonlist):
         datacache[b.dataref] = None
-        if b.dreftype != DREF_TYPE.CMD and b.led != None:
-            print(f"register dataref {b.dataref}")
+        if b.dreftype != DREF_TYPE.CMD and (b.led != None or (b.type >= BUTTON.READ_1 and b.type <= BUTTON.READ_6)):
+            print(f"register dataref {b.id}, {b.label}, {b.dataref}")
+            freq = 3
+            if b.type >= BUTTON.READ_1 and b.type <= BUTTON.READ_6:
+                freq = b.type - BUTTON.READ_1 + 1
             xp.AddDataRef(b.dataref, 3)
-    for d in datarefs:
-        print(f"register dataref {d[0]}")
-        datacache[d[0]] = None
-        xp.AddDataRef(d[0], d[1])
 
 
 def xor_bitmask(a, b, bitmask):
