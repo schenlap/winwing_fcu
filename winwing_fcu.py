@@ -553,7 +553,7 @@ def create_button_list_fcu():
 
 def RequestDataRefs(xp):
     for idx,b in enumerate(buttonlist):
-        datacache[b.dataref] = None
+        datacache[b.label] = None
         if b.dreftype != DREF_TYPE.CMD and (b.led != None or (b.type >= BUTTON.READ_1 and b.type <= BUTTON.READ_6)):
             print(f"register dataref {b.id}, {b.label}, {b.dataref}")
             freq = 3
@@ -577,7 +577,7 @@ def fcu_button_event():
             buttons_press_event[b.id] = 0
             #print(f'button {b.label} pressed')
             if b.type == BUTTON.TOGGLE:
-                val = datacache[b.dataref]
+                val = datacache[b.label]
                 if b.dreftype== DREF_TYPE.DATA:
                     print(f'set dataref {b.dataref} from {bool(val)} to {not bool(val)}')
                     xp.WriteDataRef(b.dataref, not bool(val))
@@ -585,7 +585,7 @@ def fcu_button_event():
                     print(f'send command {b.dataref}')
                     xp.SendCommand(b.dataref)
             elif b.type == BUTTON.SWITCH:
-                val = datacache[b.dataref]
+                val = datacache[b.label]
                 if b.dreftype== DREF_TYPE.DATA:
                     print(f'set dataref {b.dataref} to 1')
                     xp.WriteDataRef(b.dataref, 1)
@@ -685,38 +685,42 @@ def set_datacache(values):
     global exped_led_state
 
     new = False
-    for v in values:
+    #print(f"values: {values}")
+    for vdref in values:
+        
+        v = [b for b in buttonlist if  b.dataref == vdref]
+        v = v[0].label # there may be more than one entry with same dataref
         #print(f'cache: v:{v} val:{values[v]}')
-        if v == 'AirbusFBW/SupplLightLevelRehostats[0]' and values[v] <= 1:
+        if v == 'SupplLightLevelRehostats[0]' and values[vdref] <= 1:
             # brightness is in 0..1, we need 0..255
-            values[v] = int(values[v] * 255)
-        if v == 'AirbusFBW/SupplLightLevelRehostats[1]' and values[v] <= 1:
+            values[vdref] = int(values[vdref] * 255)
+        if v == 'SupplLightLevelRehostats[1]' and values[vdref] <= 1:
             # brightness is in 0..1, we need 0..255
-            values[v] = int(values[v] * 235 + 20)
-        if v == 'sim/cockpit2/electrical/instrument_brightness_ratio_manual[10]' and values[v] <= 1:
+            values[vdref] = int(values[vdref] * 235 + 20)
+        if v == 'instrument_brightness_ratio_manual[10]' and values[vdref] <= 1:
             # brightness is in 0..1, we need 0..255
-            values[v] = int(values[v] * 255)
-        if v == 'sim/cockpit2/electrical/instrument_brightness_ratio_manual[14]' and values[v] <= 1:
+            values[vdref] = int(values[vdref] * 255)
+        if v == 'instrument_brightness_ratio_manual[14]' and values[vdref] <= 1:
             # brightness is in 0..1, we need 0..255
-            values[v] = int(values[v] * 255)
-        spd_mach = datacache['sim/cockpit/autopilot/airspeed_is_mach']
-        if spd_mach and v == 'sim/cockpit2/autopilot/airspeed_dial_kts_mach' and values[v] < 1:
-            values[v] = (values[v] +0.005 ) * 100
-        if device_config & DEVICEMASK.EFISR and v == 'sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot' and values[v] < 100:
-            values[v] = (values[v] + 0.005) * 100
-        if device_config & DEVICEMASK.EFISL and v == 'sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot' and values[v] < 100:
-            values[v] = (values[v] + 0.005) * 100
-        if datacache[v] != int(values[v]):
+            values[vdref] = int(values[vdref] * 255)
+        spd_mach = datacache['airspeed_is_mach']
+        if spd_mach and v == 'airspeed_dial_kts_mach' and values[vdref] < 1:
+            values[vdref] = (values[vdref] +0.005 ) * 100
+        if device_config & DEVICEMASK.EFISR and v == 'barometer_setting_in_hg_copilot' and values[vdref] < 100:
+            values[vdref] = (values[vdref] + 0.005) * 100
+        if device_config & DEVICEMASK.EFISL and v == 'barometer_setting_in_hg_pilot' and values[vdref] < 100:
+            values[vdref] = (values[vdref] + 0.005) * 100
+        if datacache[v] != int(values[vdref]):
             new = True
-            print(f'cache: v:{v} val:{int(values[v])}')
-            datacache[v] = int(values[v])
-            set_button_led_lcd(v, int(values[v]))
+            print(f'cache: v:{v} val:{int(values[vdref])}')
+            datacache[v] = int(values[vdref])
+            set_button_led_lcd(v, int(values[vdref]))
     if new == True or usb_retry == True:
-        speed = datacache['sim/cockpit2/autopilot/airspeed_dial_kts_mach']
-        heading = datacache['sim/cockpit/autopilot/heading_mag']
-        alt = datacache['sim/cockpit/autopilot/altitude']
-        vs = datacache['sim/cockpit/autopilot/vertical_velocity']
-        hdg = datacache['AirbusFBW/HDGTRKmode']
+        speed = datacache['airspeed_dial_kts_mach']
+        heading = datacache['heading_mag']
+        alt = datacache['altitude']
+        vs = datacache['vertical_velocity']
+        hdg = datacache['HDGTRKmode']
         if vs < 0:
             vs = abs(vs)
             flags['vs_vert'].value = False
@@ -724,11 +728,11 @@ def set_datacache(values):
             flags['vs_vert'].value = True
 
         flags['fpa_comma'].value = False
-        if datacache['AirbusFBW/SPDdashed']:
+        if datacache['SPDdashed']:
             speed = '---'
-        if datacache['AirbusFBW/HDGdashed']:
+        if datacache['HDGdashed']:
             heading = '---'
-        if datacache['AirbusFBW/VSdashed']:
+        if datacache['VSdashed']:
             vs = '----'
             flags['vs_vert'].value = False
         elif not hdg:
@@ -740,9 +744,9 @@ def set_datacache(values):
             vs = string_fix_length(int(vs / 100), 2)
             vs = vs.ljust(4, ' ')
             flags['fpa_comma'].value = True
-        flags['spd_managed'].value = not not datacache['AirbusFBW/SPDmanaged']
-        flags['hdg_managed'].value = not not datacache['AirbusFBW/HDGmanaged']
-        flags['alt_managed'].value = not not datacache['AirbusFBW/ALTmanaged']
+        flags['spd_managed'].value = not not datacache['SPDmanaged']
+        flags['hdg_managed'].value = not not datacache['HDGmanaged']
+        flags['alt_managed'].value = not not datacache['ALTmanaged']
         flags['spd'].value = not spd_mach
         flags['mach'].value = not not spd_mach
         flags['mach_comma'].value = not not spd_mach
@@ -758,7 +762,7 @@ def set_datacache(values):
 
         if True:
             try: # dataref may not be received already, even when connected
-                exped_led_state_desired = datacache['AirbusFBW/APVerticalMode'] >= 112
+                exped_led_state_desired = datacache['APVerticalMode'] >= 112
             except:
                 exped_led_state_desired = False
             if exped_led_state_desired != exped_led_state:
@@ -769,13 +773,13 @@ def set_datacache(values):
         sleep(0.05)
 
         if device_config & DEVICEMASK.EFISR:
-            std = datacache['AirbusFBW/BaroStdFO']
-            unit = datacache['AirbusFBW/BaroUnitFO']
+            std = datacache['BaroStdFO']
+            unit = datacache['BaroUnitFO']
             flags['efisr_qnh'].value = not std
             if std:
                 baro = 'Std '
             else:
-                baro = datacache['sim/cockpit2/gauges/actuators/barometer_setting_in_hg_copilot']
+                baro = datacache['barometer_setting_in_hg_copilot']
                 if unit:
                    baro = int((baro * 33.86388 + 50) / 100)
             flags['efisr_hpa_dec'].value = not unit and not std
@@ -785,13 +789,13 @@ def set_datacache(values):
                 sleep(0.05)
                 datacache['baro_efisr_last'] = baro
         if device_config & DEVICEMASK.EFISL:
-            std = datacache['AirbusFBW/BaroStdCapt']
-            unit = datacache['AirbusFBW/BaroUnitCapt']
+            std = datacache['BaroStdCapt']
+            unit = datacache['BaroUnitCapt']
             flags['efisl_qnh'].value = not std
             if std:
                 baro = 'Std '
             else:
-                baro = datacache['sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot']
+                baro = datacache['barometer_setting_in_hg_pilot']
                 if unit:
                    baro = int((baro * 33.86388 + 50) / 100)
             flags['efisl_hpa_dec'].value = not unit and not std
