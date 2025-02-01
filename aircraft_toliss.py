@@ -1,12 +1,10 @@
 from Aircraft import Aircraft, DREF, DREF_TYPE
 
 class Toliss_A319(Aircraft):
-    def set_name(self, name):
-        self.name = name
+    def name(self):
+        return "Toliss A319 and compatible"
 
     def create_aircraft(self):
-        #name = "test"
-        print("Test")
         self.drefs = []
         self.drefs.append(DREF("MACH", "toliss_airbus/ias_mach_button_push", DREF_TYPE.CMD))
         self.drefs.append(DREF("LOC", "AirbusFBW/LOCbutton", DREF_TYPE.CMD))
@@ -141,7 +139,3 @@ class Toliss_A319(Aircraft):
         self.drefs.append(DREF("L_FD_IND", "AirbusFBW/FD1Engage", DREF_TYPE.NONE))
         self.drefs.append(DREF("L_LS_IND", "AirbusFBW/ILSonCapt", DREF_TYPE.NONE))
 
-acf = Toliss_A319()
-acf.set_name("Toliss A319 and compatibla")
-
-acf.create_aircraft()

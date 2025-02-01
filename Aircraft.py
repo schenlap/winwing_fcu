@@ -14,7 +14,7 @@ class DREF():
 
 class Aircraft(ABC):
     @abstractmethod
-    def set_name(self, name): raise NotImplementedError
+    def name(self): raise NotImplementedError
 
     @abstractmethod
     def create_aircraft(self): raise NotImplementedError
