@@ -662,10 +662,10 @@ def fcu_create_events(ep_in, ep_out):
             buttons_last = buttons
 
 
-def set_button_led_lcd(dataref, v):
+def set_button_led_lcd(label, v):
     global led_brightness
     for b in buttonlist:
-        if b.dataref == dataref:
+        if b.label == label:
             if b.led == None:
                 break
             if v >= 255:
@@ -691,10 +691,10 @@ def set_datacache(values):
         v = [b for b in buttonlist if  b.dataref == vdref]
         v = v[0].label # there may be more than one entry with same dataref
         #print(f'cache: v:{v} val:{values[v]}')
-        if v == 'SupplLightLevelRehostats[0]' and values[vdref] <= 1:
+        if v == 'BRIGHT' and values[vdref] <= 1:
             # brightness is in 0..1, we need 0..255
             values[vdref] = int(values[vdref] * 255)
-        if v == 'SupplLightLevelRehostats[1]' and values[vdref] <= 1:
+        if v == 'BRIGHT_LCD' and values[vdref] <= 1:
             # brightness is in 0..1, we need 0..255
             values[vdref] = int(values[vdref] * 235 + 20)
         if v == 'instrument_brightness_ratio_manual[10]' and values[vdref] <= 1:
