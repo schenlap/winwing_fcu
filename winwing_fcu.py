@@ -24,6 +24,9 @@ import usb.util
 
 import XPlaneUdp
 
+import aircraft_toliss
+from aircraft_toliss import DREF_TYPE
+
 VERSION = 'V0.6+'
 
 BUTTONS_CNT = 32+32+32 # FCU:32, EFISR:32, EFISL:32
@@ -81,10 +84,10 @@ class Leds(Enum):
     EFISL_ARPT_GREEN = 209
 
 
-class DREF_TYPE(Enum):
-    DATA = 0
-    CMD = 1
-    NONE = 2 # for testing
+#class DREF_TYPE(Enum):
+#    DATA = 0
+#    CMD = 1
+#    NONE = 2 # for testing
 
 
 class Button:
@@ -539,6 +542,17 @@ def create_button_list_fcu():
         buttonlist.append(Button(None, "None", "AirbusFBW/FD1Engage", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_FD_GREEN))
         buttonlist.append(Button(None, "None", "AirbusFBW/ILSonCapt", DREF_TYPE.DATA, BUTTON.NONE, Leds.EFISL_LS_GREEN))
 
+    acf = aircraft_toliss.Toliss_A319()
+    acf.create_aircraft()
+    for d in acf.drefs:
+        for bidx in range(len(buttonlist)):
+            if buttonlist[bidx].label == d.label:
+                buttonlist[bidx].dataref = d.dref
+                buttonlist[bidx].dreftype = d.dreftype
+                break
+    for b in buttonlist:
+        if b.label != "None":
+            print(f"self.drefs.append(DREF(\"{b.label}\", \"{b.dataref}\", {b.dreftype}))")
 
 def RequestDataRefs(xp):
     for idx,b in enumerate(buttonlist):
@@ -851,6 +865,7 @@ def main():
     print('compatible with X-Plane 11/12 and all Toliss Airbus')
 
     create_button_list_fcu()
+        
     datacache['baro_efisr_last'] = None
     datacache['baro_efisl_last'] = None
 
