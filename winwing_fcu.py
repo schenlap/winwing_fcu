@@ -555,6 +555,8 @@ def RequestDataRefs(xp):
     for idx,b in enumerate(buttonlist):
         datacache[b.label] = None
         if b.dreftype != DREF_TYPE.CMD and (b.led != None or (b.type >= BUTTON.READ_1 and b.type <= BUTTON.READ_6)):
+            if b.dataref == None:
+                continue
             print(f"register dataref {b.id}, {b.label}, {b.dataref}")
             freq = 3
             if b.type >= BUTTON.READ_1 and b.type <= BUTTON.READ_6:
@@ -575,6 +577,9 @@ def fcu_button_event():
             continue
         if buttons_press_event[b.id]:
             buttons_press_event[b.id] = 0
+            if b.dataref is None:
+                print(f"dataref for {b.label} not set")
+                continue
             #print(f'button {b.label} pressed')
             if b.type == BUTTON.TOGGLE:
                 val = datacache[b.label]
@@ -598,7 +603,7 @@ def fcu_button_event():
                     xp.WriteDataRef(b.dataref, 0)
             elif b.type == BUTTON.SEND_1:
                 if b.dreftype== DREF_TYPE.DATA:
-                    print(f'set dataref {b.dataref} to 1')
+                    print(f'set dataref {b.dataref} for label {b.label} to 1')
                     xp.WriteDataRef(b.dataref, 1)
             elif b.type == BUTTON.SEND_2:
                 if b.dreftype== DREF_TYPE.DATA:
