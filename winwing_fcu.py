@@ -693,33 +693,34 @@ def set_datacache(values):
     #print(f"values: {values}")
     for vdref in values:
         
-        v = [b for b in buttonlist if  b.dataref == vdref]
-        v = v[0].label # there may be more than one entry with same dataref
-        #print(f'cache: v:{v} val:{values[v]}')
-        if v == 'BRIGHT' and values[vdref] <= 1:
-            # brightness is in 0..1, we need 0..255
-            values[vdref] = int(values[vdref] * 255)
-        if v == 'BRIGHT_LCD' and values[vdref] <= 1:
-            # brightness is in 0..1, we need 0..255
-            values[vdref] = int(values[vdref] * 235 + 20)
-        #if v == 'instrument_brightness_ratio_manual[10]' and values[vdref] <= 1:
-        #    # brightness is in 0..1, we need 0..255
-        #    values[vdref] = int(values[vdref] * 255)
-        #if v == 'instrument_brightness_ratio_manual[14]' and values[vdref] <= 1:
-        #    # brightness is in 0..1, we need 0..255
-        #    values[vdref] = int(values[vdref] * 255)
-        spd_mach = datacache['airspeed_is_mach']
-        if spd_mach and v == 'airspeed_dial_kts_mach' and values[vdref] < 1:
-            values[vdref] = (values[vdref] +0.005 ) * 100
-        if device_config & DEVICEMASK.EFISR and v == 'barometer_setting_in_hg_copilot' and values[vdref] < 100:
-            values[vdref] = (values[vdref] + 0.005) * 100
-        if device_config & DEVICEMASK.EFISL and v == 'barometer_setting_in_hg_pilot' and values[vdref] < 100:
-            values[vdref] = (values[vdref] + 0.005) * 100
-        if datacache[v] != int(values[vdref]):
-            new = True
-            print(f'cache: v:{v} val:{int(values[vdref])}')
-            datacache[v] = int(values[vdref])
-            set_button_led_lcd(v, int(values[vdref]))
+        vo = [b for b in buttonlist if  b.dataref == vdref]
+        for i in range(len(vo)):
+            v = vo[i].label # TODO there may be more than one entry with same dataref
+            #print(f'cache: v:{v} val:{values[v]}')
+            if v == 'BRIGHT' and values[vdref] <= 1:
+                # brightness is in 0..1, we need 0..255
+                values[vdref] = int(values[vdref] * 255)
+            if v == 'BRIGHT_LCD' and values[vdref] <= 1:
+                # brightness is in 0..1, we need 0..255
+                values[vdref] = int(values[vdref] * 235 + 20)
+            #if v == 'instrument_brightness_ratio_manual[10]' and values[vdref] <= 1:
+            #    # brightness is in 0..1, we need 0..255
+            #    values[vdref] = int(values[vdref] * 255)
+            #if v == 'instrument_brightness_ratio_manual[14]' and values[vdref] <= 1:
+            #    # brightness is in 0..1, we need 0..255
+            #    values[vdref] = int(values[vdref] * 255)
+            spd_mach = datacache['airspeed_is_mach']
+            if spd_mach and v == 'airspeed_dial_kts_mach' and values[vdref] < 1:
+                values[vdref] = (values[vdref] +0.005 ) * 100
+            if device_config & DEVICEMASK.EFISR and v == 'barometer_setting_in_hg_copilot' and values[vdref] < 100:
+                values[vdref] = (values[vdref] + 0.005) * 100
+            if device_config & DEVICEMASK.EFISL and v == 'barometer_setting_in_hg_pilot' and values[vdref] < 100:
+                values[vdref] = (values[vdref] + 0.005) * 100
+            if datacache[v] != int(values[vdref]):
+                new = True
+                print(f'cache: v:{v} val:{int(values[vdref])}')
+                datacache[v] = int(values[vdref])
+                set_button_led_lcd(v, int(values[vdref]))
     if new == True or usb_retry == True:
         speed = datacache['airspeed_dial_kts_mach']
         heading = datacache['heading_mag']
