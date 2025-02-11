@@ -2,3 +2,7 @@
 ATTRS{idVendor}=="4098", ATTRS{idProduct}=="bb10", GROUP="plugdev", TAG+="uaccess"
 # FCI + EFIS-R
 ATTRS{idVendor}=="4098", ATTRS{idProduct}=="bc1e", GROUP="plugdev", TAG+="uaccess"
+# FCI + EFIS-L
+ATTRS{idVendor}=="4098", ATTRS{idProduct}=="bc1d", GROUP="plugdev", TAG+="uaccess"
+# FCI + EFIS-R + EFIS-L
+ATTRS{idVendor}=="4098", ATTRS{idProduct}=="ba01", GROUP="plugdev", TAG+="uaccess"
