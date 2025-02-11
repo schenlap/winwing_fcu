@@ -24,8 +24,8 @@ import usb.util
 
 import XPlaneUdp
 
-import aircraft_toliss
-from aircraft_toliss import DREF_TYPE
+import aircraft_laminar
+from aircraft_laminar import DREF_TYPE
 
 VERSION = 'V0.6+'
 
@@ -541,7 +541,7 @@ def create_button_list_fcu():
         buttonlist.append(Button(None, "L_FD_IND", BUTTON.READ_1, Leds.EFISL_FD_GREEN))
         buttonlist.append(Button(None, "L_LS_IND", BUTTON.READ_1, Leds.EFISL_LS_GREEN))
 
-    acf = aircraft_toliss.Toliss_A319()
+    acf = aircraft_laminar.Laminar_A330()
     acf.create_aircraft()
     for d in acf.drefs:
         for bidx in range(len(buttonlist)):
@@ -562,6 +562,12 @@ def RequestDataRefs(xp):
             if b.type >= BUTTON.READ_1 and b.type <= BUTTON.READ_6:
                 freq = b.type - BUTTON.READ_1 + 1
             xp.AddDataRef(b.dataref, 3)
+
+
+def RequestDataRefsTailnum(xp, intervall):
+    for i in range(6):
+        xp.AddDataRef(f"sim/aircraft/view/acf_tailnum[{i}]", intervall)
+        xp.AddDataRef(f"sim/aircraft/view/acf_tailnum[{i}]", intervall)
 
 
 def xor_bitmask(a, b, bitmask):
@@ -914,12 +920,14 @@ def main():
     while True:
         if not xplane_connected:
             try:
-                xp.AddDataRef("sim/aircraft/view/acf_tailnum")
-                values = xp.GetValues()
+                RequestDataRefsTailnum(xp, 2)
                 xplane_connected = True
                 print(f"X-Plane connected")
+                sleep(1)
+                values = xp.GetValues()
+                print(values)
+                RequestDataRefsTailnum(xp, 0)
                 RequestDataRefs(xp)
-                xp.AddDataRef("sim/aircraft/view/acf_tailnum", 0)
             except XPlaneUdp.XPlaneTimeout:
                 xplane_connected = False
                 sleep(2)

@@ -2,7 +2,7 @@ from Aircraft import Aircraft, DREF, DREF_TYPE
 
 class Laminar_A330(Aircraft):
     def name(self):
-        return "Laminar A330 and compatible"
+        return "Laminar A330 and compatible (D-AIKN)"
 
     def create_aircraft(self):
         self.drefs = []

@@ -2,7 +2,7 @@ from Aircraft import Aircraft, DREF, DREF_TYPE
 
 class Toliss_A319(Aircraft):
     def name(self):
-        return "Toliss A319 and compatible"
+        return "Toliss A319 and compatible (C-GTLS)"
 
     def create_aircraft(self):
         self.drefs = []
