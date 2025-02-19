@@ -408,25 +408,8 @@ datarefs = [
     ("AirbusFBW/BaroStdFO", 2),
     ("AirbusFBW/BaroUnitFO", 2),
     ("AirbusFBW/BaroStdCapt", 2),
-    ("AirbusFBW/BaroUnitCapt", 2),
-    ("sim/cockpit2/autopilot/servos_on",2),
-    ("sim/cockpit2/autopilot/servos2_on",2),
-    ("sim/cockpit2/autopilot/autothrottle_arm",2),
-    ("sim/cockpit2/autopilot/approach_status",2),
-    ("sim/cockpit2/autopilot/nav_status",2),
-    ("sim/cockpit2/autopilot/nav_status",2),
-    ("sim/cockpit2/autopilot/altitude_hold_status", 2),
-]
-
-#need mapping from cmd to dataref
-dataRefMap = {
-    "sim/cockpit2/autopilot/servos_on":"sim/autopilot/servos_toggle",
-    "sim/cockpit2/autopilot/servos2_on":"sim/autopilot/servos2_toggle",
-    "sim/cockpit2/autopilot/autothrottle_arm":"laminar/A333/autopilot/a_thr_toggle",
-    "sim/cockpit2/autopilot/approach_status":"sim/autopilot/approach",
-    "sim/cockpit2/autopilot/nav_status":"sim/autopilot/NAV",
-    "sim/cockpit2/autopilot/altitude_hold_status":"sim/autopilot/altitude_hold",
-}
+    ("AirbusFBW/BaroUnitCapt", 2)
+  ]
 
 
 buttons_press_event = [0] * BUTTONS_CNT
@@ -439,39 +422,6 @@ usb_retry = False
 
 xp = None
 
-def create_button_A333_fcu():
-    buttonlist.append(Button(0, "MACH", "sim/autopilot/knots_mach_toggle", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(1, "LOC", "sim/autopilot/NAV", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.LOC_GREEN))
-    buttonlist.append(Button(2, "TRK", "sim/autopilot/trkfpa", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(3, "AP1", "sim/autopilot/servos_toggle", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.AP1_GREEN))
-    buttonlist.append(Button(4, "AP2", "sim/autopilot/servos2_toggle", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.AP2_GREEN))
-    buttonlist.append(Button(5, "A/THR", "laminar/A333/autopilot/a_thr_toggle", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.ATHR_GREEN))
-    buttonlist.append(Button(6, "EXPED", "sim/autopilot/altitude_hold", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.EXPED_GREEN))
-    buttonlist.append(Button(7, "METRIC", "laminar/A333/autopilot/metric_alt_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(8, "APPR", "sim/autopilot/approach", DREF_TYPE.CMD, BUTTON.TOGGLE, Leds.APPR_GREEN))
-    buttonlist.append(Button(9, "SPD DEC", "sim/autopilot/airspeed_down", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(10, "SPD INC", "sim/autopilot/airspeed_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(11, "SPD PUSH", "laminar/A333/autopilot/speed_knob_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(12, "SPD PULL", "laminar/A333/autopilot/speed_knob_pull", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(13, "HDG DEC", "sim/autopilot/heading_down", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(14, "HDG INC", "sim/autopilot/heading_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(15, "HDG PUSH", "veAirbusFBW/PushHDGSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(16, "HDG PULL", "AirbusFBW/PullHDGSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(17, "ALT DEC", "sim/autopilot/altitude_down", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(18, "ALT INC", "sim/autopilot/altitude_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(19, "ALT PUSH", "laminar/A333/autopilot/altitude_knob_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(20, "ALT PULL", "laminar/A333/autopilot/altitude_knob_pull", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(21, "VS DEC", "sim/autopilot/vertical_speed_down", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(22, "VS INC", "sim/autopilot/vertical_speed_up", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(23, "VS PUSH", "laminar/A333/autopilot/vertical_knob_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(24, "VS PULL", "laminar/A333/autopilot/vertical_knob_pull", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(25, "ALT 100", "laminar/A333/autopilot/alt_step_left", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(26, "ALT 1000", "laminar/A333/autopilot/alt_step_right", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    buttonlist.append(Button(27, "BRIGHT", "sim/cockpit2/electrical/instrument_brightness_ratio_manual[14]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT)) # Laminar A330
-    buttonlist.append(Button(27, "BRIGHT_LCD", "sim/cockpit2/electrical/instrument_brightness_ratio_manual[10]", DREF_TYPE.DATA, BUTTON.NONE, Leds.SCREEN_BACKLIGHT)) # Laminar A330
-    buttonlist.append(Button(28, "APPR_LED", "AirbusFBW/APPRilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.APPR_GREEN))
-    buttonlist.append(Button(29, "ATHR_LED", "AirbusFBW/ATHRmode", DREF_TYPE.DATA, BUTTON.NONE, Leds.ATHR_GREEN))
-    buttonlist.append(Button(30, "LOC_LED", "AirbusFBW/LOCilluminated", DREF_TYPE.DATA, BUTTON.NONE, Leds.LOC_GREEN))
 
 def create_button_list_fcu():
     buttonlist.append(Button(0, "MACH", "toliss_airbus/ias_mach_button_push", DREF_TYPE.CMD, BUTTON.TOGGLE))
@@ -501,8 +451,6 @@ def create_button_list_fcu():
     buttonlist.append(Button(24, "VS PULL", "AirbusFBW/PullVSSel", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(25, "ALT 100", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_0))
     buttonlist.append(Button(26, "ALT 1000", "AirbusFBW/ALT100_1000", DREF_TYPE.DATA, BUTTON.SEND_1))
-    #buttonlist.append(Button(25, "ALT 100", "laminar/A333/autopilot/alt_step_left", DREF_TYPE.CMD, BUTTON.TOGGLE))
-    #buttonlist.append(Button(26, "ALT 1000", "laminar/A333/autopilot/alt_step_right", DREF_TYPE.CMD, BUTTON.TOGGLE))
     buttonlist.append(Button(27, "BRIGHT", "AirbusFBW/SupplLightLevelRehostats[0]", DREF_TYPE.DATA, BUTTON.NONE, [Leds.BACKLIGHT, Leds.EFISR_BACKLIGHT, Leds.EFISL_BACKLIGHT, Leds.FLAG_GREEN, Leds.EFISR_FLAG_GREEN]))
     buttonlist.append(Button(27, "BRIGHT_LCD", "AirbusFBW/SupplLightLevelRehostats[1]", DREF_TYPE.DATA, BUTTON.NONE, [Leds.SCREEN_BACKLIGHT, Leds.EFISR_SCREEN_BACKLIGHT, Leds.EFISL_SCREEN_BACKLIGHT]))
     #buttonlist.append(Button(27, "BRIGHT", "sim/cockpit2/electrical/instrument_brightness_ratio_manual[14]", DREF_TYPE.DATA, BUTTON.NONE, Leds.BACKLIGHT)) # Laminar A330
@@ -704,13 +652,10 @@ def fcu_create_events(ep_in, ep_out):
             buttons_last = buttons
 
 
-
 def set_button_led_lcd(dataref, v):
     global led_brightness
-
-    ref = dataRefMap.get(dataref, dataref)
     for b in buttonlist:
-        if b.dataref == ref:
+        if b.dataref == dataref:
             if b.led == None:
                 break
             if v >= 255:
@@ -751,11 +696,11 @@ def set_datacache(values):
             values[v] = (values[v] + 0.005) * 100
         if device_config & DEVICEMASK.EFISL and v == 'sim/cockpit2/gauges/actuators/barometer_setting_in_hg_pilot' and values[v] < 100:
             values[v] = (values[v] + 0.005) * 100
-        if datacache[v] != round(values[v]):
+        if datacache[v] != int(values[v]):
             new = True
             print(f'cache: v:{v} val:{int(values[v])}')
-            datacache[v] = round(values[v])
-            set_button_led_lcd(v, round(values[v]))
+            datacache[v] = int(values[v])
+            set_button_led_lcd(v, int(values[v]))
     if new == True or usb_retry == True:
         speed = datacache['sim/cockpit2/autopilot/airspeed_dial_kts_mach']
         heading = datacache['sim/cockpit/autopilot/heading_mag']
@@ -856,18 +801,12 @@ def kb_wait_quit_event():
 
 
 def find_usblib():
-    path = [
-            #'/opt/homebrew/lib/libusb-1.0.0.dylib',
-            #'/usr/lib/x86_64-linux-gnu/libusb-1.0.so.0',
-            #'/usr/lib/libusb-1.0.so.0'
-            '/usr/local/lib/libusb-1.0.0.dylib',
-            '/usr/local/lib/libusb-1.0.a',
-            '/usr/local/lib/libusb-1.0.dylib',
-            ]
+    path = ['/opt/homebrew/lib/libusb-1.0.0.dylib',
+            '/usr/lib/x86_64-linux-gnu/libusb-1.0.so.0',
+            '/usr/lib/libusb-1.0.so.0']
     pathlist = list(enumerate(path))
     for p in range(len(pathlist)):
-        #backend = usb.backend.libusb1.get_backend(find_library=lambda x: pathlist[p][1])
-        backend = usb.backend.libusb1.get_backend()
+        backend = usb.backend.libusb1.get_backend(find_library=lambda x: pathlist[p][1])
         if backend:
             print(f"using {pathlist[p][1]}")
             return backend
@@ -911,9 +850,7 @@ def main():
 
     print('compatible with X-Plane 11/12 and all Toliss Airbus')
 
-    #create_button_list_fcu()
-    create_button_A333_fcu()
-
+    create_button_list_fcu()
     datacache['baro_efisr_last'] = None
     datacache['baro_efisl_last'] = None
 
@@ -971,6 +908,7 @@ def main():
         try:
             values = xp.GetValues()
             values_processed.wait()
+            #print(values)
             #values will be handled in fcu_create_events to write to usb only in one thread.
             # see function set_datacache(values)
         except XPlaneUdp.XPlaneTimeout:
@@ -979,4 +917,4 @@ def main():
             sleep(2)
 
 if __name__ == '__main__':
-  main() 
+  main()
