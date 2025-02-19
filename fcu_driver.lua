@@ -20,6 +20,9 @@ find_fcu()
 
 
 function lcd_init()
+    if FCU == nil then
+        return
+    end
     hid_write(FCU, 0, 0xf0, 0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
     logMsg("init lcd")
 end
@@ -136,6 +139,9 @@ button_press_event_list = {}
 last_event_bit = 0
 
 function on_button_event()
+    if FCU == nil then
+        return
+    end
     local data_in = {hid_read_timeout(FCU, 42, 10)}
     local n = data_in[1] -- index start from 1.....
     if (n ~= 41)
@@ -193,7 +199,7 @@ function config_led(led)
 end
 
 
-function handle_led()
+function set_led()
     for i, led in pairs(led_list) do
         config_led(led)
     end
@@ -323,7 +329,7 @@ function draw_lcd(spd, hdg, alt, vs)
 
     local pkg_nr = 1
     hid_write(FCU, 0, 0xf0, 0x0, pkg_nr, 0x31, 0x10, 0xbb, 0x0, 0x0, 0x2, 0x1, 0x0, 0x0, 0xff, 0xff, 0x2, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-                s[2], bit.bor(s[1] , bl[12]),
+                bit.bor(s[2],bl[12]), s[1],
                 s[0], bit.bor(h[3] , bl[1]),
                 h[2], h[1], bit.bor(h[0] , bl[0]),  bit.bor(a[5] , bl[7]),
                 bit.bor(a[4] , bl[6]), bit.bor(a[3] , bl[5]), bit.bor(a[2] ,bl[4]), bit.bor(a[1] , bl[3]),
@@ -342,13 +348,16 @@ function round(x)
 end
 
 function refresh_dataref()
-
+    if FCU == nil then
+        return
+    end
     local need_refresh = 0
     for ref, v in pairs(cache_data) do
         local val = loadstring("return "..ref)() 
         if ref == "autopilot_spd" and val < 1 then
-            val = (val+0.0005)*100
-        end 
+            val = (val+0.00005)*1000
+        end
+        -- could be nagetive dont plus fpa here
         if v ~=  val then
             cache_data[ref] = val 
             need_refresh  = 1
@@ -359,6 +368,8 @@ function refresh_dataref()
         return
     end
 
+    local spd_is_mach = cache_data["autopilot_spd_is_mach"]
+    local trkfpa = cache_data['autopilot_trkfpa']
     --spd 
     local spd = cache_data["autopilot_spd"]
     --hdg
@@ -367,6 +378,9 @@ function refresh_dataref()
     local alt = cache_data["autopilot_alt"]
     --vs 
     local vs = cache_data["autopilot_vs"]
+    if trkfpa == 1 then
+        vs = cache_data["autopilot_fpa"]
+    end
     if vs < 0 then
         vs = math.abs(vs)
         lcd_flags["vs_vert"].value = 0
@@ -375,8 +389,6 @@ function refresh_dataref()
     end
 
     lcd_flags["fpa_comma"].value = 0
-    local spd_is_mach = cache_data["autopilot_spd_is_mach"]
-    local trkfpa = cache_data['autopilot_trkfpa']
     --signal flags 
     lcd_flags["spd"].value = 1-spd_is_mach
     lcd_flags["mach"].value = spd_is_mach
@@ -396,36 +408,41 @@ function refresh_dataref()
     local str_vs = fix_str_len(vs,4)
     
     --manage
+    lcd_flags['spd_managed'].value = 0
+    lcd_flags['hdg_managed'].value = 0
+    lcd_flags['alt_managed'].value = 0
     if cache_data["autopilot_spd_window"] == 0 then
         str_spd = "---"
         lcd_flags['mach_comma'].value = 0
+        lcd_flags['spd_managed'].value = 1
     end
     if cache_data["autopilot_hdg_window"] == 0 then
         str_hdg = "---"
+        lcd_flags['hdg_managed'].value = 1
     end
     if cache_data["autopilot_fpa_window"] == 0 then
         str_vs = "----"
         lcd_flags["vs_vert"].value  = 0
+        -- more complicated should depends on autopilot_status
+        lcd_flags['alt_managed'].value = 1
     elseif trkfpa == 0 then 
         str_vs = rjust(tostring(math.floor(vs/100)), 2, '0')
         str_vs = ljust(str_vs, 4, "#")
-        -- todo: fix butto event
-        set_button_assignment(821, "sim/autopilot/vertical_speed_down")
-        set_button_assignment(822, "sim/autopilot/vertical_speed_up")
-    else 
-        str_vs = rjust(tostring(math.floor(vs/100)), 2, '0')
+        button_list["VS_DEC"].dataref = "sim/autopilot/vertical_speed_down"
+        button_list["VS_INC"].dataref = "sim/autopilot/vertical_speed_up"
+    else
+        vs = (vs+0.05)*10
+        str_vs = rjust(tostring(math.floor(vs)), 2, '0')
         str_vs = ljust(str_vs, 4, " ")
+        logMsg("1 "..str_vs.." "..vs)
         lcd_flags["fpa_comma"].value = 1
-        set_button_assignment(821, "laminar/A333/autopilot/fpa_decrease")
-        set_button_assignment(822, "laminar/A333/autopilot/fpa_increase")
-
+        button_list["VS_DEC"].dataref = "laminar/A333/autopilot/fpa_decrease" 
+        button_list["VS_INC"].dataref = "laminar/A333/autopilot/fpa_increase"
     end
 
     draw_lcd(str_spd, str_hdg, str_alt, str_vs)
-
+    set_led()
 end
 
-do_every_frame("handle_led()")
 do_every_frame("on_button_event()")
 do_every_frame("refresh_dataref()")
---do_often("test()")
