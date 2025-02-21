@@ -17,6 +17,11 @@ function find_fcu()
     then
         logMsg("fcu device not found")
     end
+
+    succ = hid_set_nonblocking(FCU, 1)
+    logMsg("set nonblock result "..succ)
+
+
     lcd_init()
 end
 
@@ -143,7 +148,8 @@ function on_button_event()
     if FCU == nil then
         return
     end
-    local data_in = {hid_read_timeout(FCU, 42, 10)}
+    --local data_in = {hid_read_timeout(FCU, 42, 10)}
+    local data_in = {hid_read(FCU,42)}
     local n = data_in[1] -- index start from 1.....
     if (n ~= 41)
     then
@@ -179,7 +185,7 @@ function on_button_event()
         local id = info.id
         if ( button_press_event_list[id] == 1 ) then
             button_press_event_list[id] = 0
-            logMsg("CMD "..info.dataref.." index"..id)
+            logMsg("CMD "..info.dataref.." index "..id)
             command_once(info.dataref)
         end
     end
