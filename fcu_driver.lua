@@ -451,6 +451,6 @@ function refresh_dataref()
     set_led()
 end
 
-do_often(find_fcu())
+do_often("find_fcu()")
 do_every_frame("on_button_event()")
 do_every_frame("refresh_dataref()")
