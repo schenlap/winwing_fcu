@@ -199,6 +199,7 @@ devlist = [{'vid':0x4098, 'pid':0xbb10, 'name':'FCU', 'mask':DEVICEMASK.FCU},
            {'vid':0x4098, 'pid':0xbc1d, 'name':'FCU + EFIS-L (EFIS-L lcd and led test)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL},
            {'vid':0x4098, 'pid':0xba01, 'name':'FCU + EFIS-L + EFIS-R (EFIS-L lcd and led test)', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL | DEVICEMASK.EFISR}]
 
+h = None
 for d in devlist:
     print(f"searching for winwing {d['name']} ... ", end='')
     device = hid.enumerate(vendor_id=d['vid'], product_id=d['pid'])
