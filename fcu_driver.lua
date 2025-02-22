@@ -1,28 +1,19 @@
-require("bit")
-
-function find_fcu()
-    if (FCU ~= nil) then
-        return ;
-    end
+bit = require("bit")
+function init_fcu()
     for i = 1,NUMBER_OF_HID_DEVICES do
         local device = ALL_HID_DEVICES[i]
-        if ((device.vendor_id == 16536) and (device.product_id == 47888) )
+        if ((device.vendor_id == 0x4098) and (device.product_id == 0xbb10) )
         then
             logMsg("found fcu device "..device.product_string)
-            FCU = hid_open(device.vendor_id, device.product_id)
+            FCU = hid_open(0x4098, 0xbb10)
+            lcd_init()
+            hid_close(FCU)
+            assign_button()
+            found = 1
             break
         end
     end
-    if FCU == nil
-    then
-        logMsg("fcu device not found")
-    end
 
-    succ = hid_set_nonblocking(FCU, 1)
-    logMsg("set nonblock result "..succ)
-
-
-    lcd_init()
 end
 
 
@@ -33,6 +24,45 @@ function lcd_init()
     hid_write(FCU, 0, 0xf0, 0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
     logMsg("init lcd")
 end
+
+--TODO: still working on it to load this button id begin from config automatic  button IDs might change across different machines
+--you can find the button id in X-Plane 12/Output/preferences/control profiles/{your device profile}.prf
+FCU_BUTTON_BEGIN = 800
+button = {}
+button["MACH"] = {id=0,dataref="sim/autopilot/knots_mach_toggle"}
+button["LOC"] = {id=1,dataref="sim/autopilot/NAV"}
+button["TRK"] = {id=2,dataref="sim/autopilot/trkfpa"}
+button["AP1"] = {id=3,dataref="sim/autopilot/servos_toggle"}
+button["AP2"] = {id=4,dataref="sim/autopilot/servos2_toggle"}
+button["A_THR"] = {id=5,dataref="laminar/A333/autopilot/a_thr_toggle"}
+button["EXPED"] = {id=6,dataref="sim/autopilot/altitude_hold"}
+button["METRIC"] = {id=7,dataref="laminar/A333/autopilot/metric_alt_push"}
+button["APPR"] = {id=8,dataref="sim/autopilot/approach"}
+button["SPD_DEC"] = {id=9,dataref="sim/autopilot/airspeed_down"}
+button["SPD_INC"] = {id=10,dataref="sim/autopilot/airspeed_up"}
+button["SPD_PUSH"] = {id=11,dataref="laminar/A333/autopilot/speed_knob_push"}
+button["SPD_PULL"] = {id=12,dataref="laminar/A333/autopilot/speed_knob_pull"}
+button["HDG_DEC"] = {id=13,dataref="sim/autopilot/heading_down"}
+button["HDG_INC"] = {id=14,dataref="sim/autopilot/heading_up"}
+button["HDG_PUSH"] = {id=15,dataref="laminar/A333/autopilot/heading_knob_push"}
+button["HDG_PULL"] = {id=16,dataref="laminar/A333/autopilot/heading_knob_pull"}
+button["ALT_DEC"] = {id=17,dataref="sim/autopilot/altitude_down"}
+button["ALT_INC"] = {id=18,dataref="sim/autopilot/altitude_up"}
+button["ALT_PUSH"] = {id=19,dataref="laminar/A333/autopilot/altitude_knob_push"}
+button["ALT_PULL"] = {id=20,dataref="laminar/A333/autopilot/altitude_knob_pull"}
+button["VS_DEC"] = {id=21,dataref="sim/autopilot/vertical_speed_down"}
+button["VS_INC"] = {id=22,dataref="sim/autopilot/vertical_speed_up"}
+button["VS_PUSH"] = {id=23,dataref="laminar/A333/autopilot/vertical_knob_push"}
+button["VS_PULL"] = {id=24,dataref="laminar/A333/autopilot/vertical_knob_pull"}
+button["ALT100"] = {id=25,dataref="laminar/A333/autopilot/alt_step_left"}
+button["ALT1000"] = {id=26,dataref="laminar/A333/autopilot/alt_step_right"}
+
+function assign_button()
+    for btn, info in pairs(button) do
+        set_button_assignment(info.id+FCU_BUTTON_BEGIN, info.dataref)
+    end
+end
+
 
 --register event from xp
 dataref("autopilot_spd", "sim/cockpit2/autopilot/airspeed_dial_kts_mach", "readonly")
@@ -52,36 +82,6 @@ dataref("autopilot_hdg_window", "laminar/A333/autopilot/hdg_window_open", "reado
 dataref("autopilot_trkfpa", "sim/cockpit2/autopilot/trk_fpa", "readonly")
 dataref("autopilot_alt_mode","laminar/A333/annun/autopilot/alt_mode", "readonly") --annun means annunciator 
 
-
---define button 
-button_list = {}
-button_list["MACH"] = {id=0,name="MACH",dataref="sim/autopilot/knots_mach_toggle"}
-button_list["LOC"] = {id=1,name="LOC",dataref="sim/autopilot/NAV"}
-button_list["TRK"] = {id=2,name="TRK",dataref="sim/autopilot/trkfpa"}
-button_list["AP1"] = {id=3,name="AP1",dataref="sim/autopilot/servos_toggle"}
-button_list["AP2"] = {id=4,name="AP2",dataref="sim/autopilot/servos2_toggle"}
-button_list["A_THR"] = {id=5,name="A/THR",dataref="laminar/A333/autopilot/a_thr_toggle"}
-button_list["EXPED"] = {id=6,name="EXPED",dataref="sim/autopilot/altitude_hold"}
-button_list["METRIC"] = {id=7,name="METRIC",dataref="laminar/A333/autopilot/metric_alt_push"}
-button_list["APPR"] = {id=8,name="APPR",dataref="sim/autopilot/approach"}
-button_list["SPD_DEC"] = {id=9,name="SPD DEC",dataref="sim/autopilot/airspeed_down"}
-button_list["SPD_INC"] = {id=10,name="SPD INC",dataref="sim/autopilot/airspeed_up"}
-button_list["SPD_PUSH"] = {id=11,name="SPD PUSH",dataref="laminar/A333/autopilot/speed_knob_push"}
-button_list["SPD_PULL"] = {id=12,name="SPD PULL",dataref="laminar/A333/autopilot/speed_knob_pull"}
-button_list["HDG_DEC"] = {id=13,name="HDG DEC",dataref="sim/autopilot/heading_down"}
-button_list["HDG_INC"] = {id=14,name="HDG INC",dataref="sim/autopilot/heading_up"}
-button_list["HDG_PUSH"] = {id=15,name="HDG PUSH",dataref="laminar/A333/autopilot/heading_knob_push"}
-button_list["HDG_PULL"] = {id=16,name="HDG PULL",dataref="laminar/A333/autopilot/heading_knob_pull"}
-button_list["ALT_DEC"] = {id=17,name="ALT DEC",dataref="sim/autopilot/altitude_down"}
-button_list["ALT_INC"] = {id=18,name="ALT INC",dataref="sim/autopilot/altitude_up"}
-button_list["ALT_PUSH"] = {id=19,name="ALT PUSH",dataref="laminar/A333/autopilot/altitude_knob_push"}
-button_list["ALT_PULL"] = {id=20,name="ALT PULL",dataref="laminar/A333/autopilot/altitude_knob_pull"}
-button_list["VS_DEC"] = {id=21,name="VS DEC",dataref="sim/autopilot/vertical_speed_down"}
-button_list["VS_INC"] = {id=22,name="VS INC",dataref="sim/autopilot/vertical_speed_up"}
-button_list["VS_PUSH"] = {id=23,name="VS PUSH",dataref="laminar/A333/autopilot/vertical_knob_push"}
-button_list["VS_PULL"] = {id=24,name="VS PULL",dataref="laminar/A333/autopilot/vertical_knob_pull"}
-button_list["ALT100"] = {id=25,name="ALT100",dataref="laminar/A333/autopilot/alt_step_left"}
-button_list["ALT1000"] = {id=26,name="ALT1000",dataref="laminar/A333/autopilot/alt_step_right"}
 
 cache_data={}
 cache_data["autopilot_spd"] = 0
@@ -140,58 +140,7 @@ lcd_flags["ffpa2"] = {byte = 10, mask = 0x80, value = 0}
 lcd_flags["fpa_comma"] = {byte = 9, mask = 0x10, value = 0}
 lcd_flags["mach_comma"] = {byte = 12, mask = 0x01, value = 0}
 
-button_press_event_list = {}
 
-last_event_bit = 0
-
-function on_button_event()
-    if FCU == nil then
-        return
-    end
-    --local data_in = {hid_read_timeout(FCU, 42, 10)}
-    local data_in = {hid_read(FCU,42)}
-    local n = data_in[1] -- index start from 1.....
-    if (n ~= 41)
-    then
-        --logMsg("invalid input data len skip "..n)
-        return
-    end
-
-    local event_bit = 0
-    for i = 3,6 do
-        event_bit = event_bit+data_in[i]*2^((i-3)*8)
-    end
-
-    if (event_bit == last_event_bit) then
-        return
-    end
-
-    local button = {}
-    for index = 0,32 do
-        local mask = 2^index
-        local bit = math.floor(event_bit/mask)
-        local bit_last = math.floor(last_event_bit/mask)
-        if (bit ~= bit_last) then
-            if (bit % 2 == 1) then
-                local id = index+1
-                button_press_event_list[index]=1
-            end
-        end
-    end
-    last_event_bit = event_bit
-
-    --send cmd 
-    for _, info  in pairs(button_list) do
-        local id = info.id
-        if ( button_press_event_list[id] == 1 ) then
-            button_press_event_list[id] = 0
-            logMsg("CMD "..info.dataref.." index "..id)
-            command_once(info.dataref)
-        end
-    end
-
-
-end
 
 function config_led(led)
     if (led.bind ~= "") then
@@ -355,9 +304,6 @@ function round(x)
 end
 
 function refresh_dataref()
-    if FCU == nil then
-        return
-    end
     local need_refresh = 0
     for ref, v in pairs(cache_data) do
         local val = loadstring("return "..ref)() 
@@ -435,22 +381,28 @@ function refresh_dataref()
     elseif trkfpa == 0 then 
         str_vs = rjust(tostring(math.floor(vs/100)), 2, '0')
         str_vs = ljust(str_vs, 4, "#")
-        button_list["VS_DEC"].dataref = "sim/autopilot/vertical_speed_down"
-        button_list["VS_INC"].dataref = "sim/autopilot/vertical_speed_up"
+        -- this knob is used for vs and pfa
+        set_button_assignment(FCU_BUTTON_BEGIN+button["VS_DEC"].id, "sim/autopilot/vertical_speed_down")
+        set_button_assignment(FCU_BUTTON_BEGIN+button["VS_INC"].id, "sim/autopilot/vertical_speed_up")
+        
     else
         vs = (vs+0.05)*10
         str_vs = rjust(tostring(math.floor(vs)), 2, '0')
         str_vs = ljust(str_vs, 4, " ")
-        logMsg("1 "..str_vs.." "..vs)
         lcd_flags["fpa_comma"].value = 1
-        button_list["VS_DEC"].dataref = "laminar/A333/autopilot/fpa_decrease" 
-        button_list["VS_INC"].dataref = "laminar/A333/autopilot/fpa_increase"
+        set_button_assignment(FCU_BUTTON_BEGIN+button["VS_DEC"].id, "laminar/A333/autopilot/fpa_decrease")
+        set_button_assignment(FCU_BUTTON_BEGIN+button["VS_INC"].id, "laminar/A333/autopilot/fpa_increase")
     end
-
+    --hid_open
+    FCU = hid_open(0x4098, 0xbb10)
     draw_lcd(str_spd, str_hdg, str_alt, str_vs)
     set_led()
+    --hid_close
+    hid_close(FCU)
 end
 
-do_often("find_fcu()")
-do_every_frame("on_button_event()")
+init_fcu()
+
+
 do_every_frame("refresh_dataref()")
+
