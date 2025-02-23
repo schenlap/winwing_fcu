@@ -25,7 +25,7 @@ end
 --TODO: still working on it to load this button id begin from config automatic  button IDs might change across different machines
 --you can find the button id in X-Plane 12/Output/preferences/control profiles/{your device profile}.prf
 FCU_BUTTON_BEGIN = 800
-btn = {}
+local btn = {}
 btn["MACH"] = {id=0,dataref="sim/autopilot/knots_mach_toggle"}
 btn["LOC"] = {id=1,dataref="sim/autopilot/NAV"}
 btn["TRK"] = {id=2,dataref="sim/autopilot/trkfpa"}
@@ -80,7 +80,7 @@ dataref("autopilot_trkfpa", "sim/cockpit2/autopilot/trk_fpa", "readonly")
 dataref("autopilot_alt_mode","laminar/A333/annun/autopilot/alt_mode", "readonly") --annun means annunciator 
 
 
-cache_data={}
+local cache_data={}
 cache_data["autopilot_spd"] = 0
 cache_data["autopilot_spd_is_mach"] = 0
 cache_data["autopilot_hdg_mag"] = 0
@@ -113,7 +113,7 @@ led_list = {
 }
 
 --define lcd
-lcd_flags = {}
+local lcd_flags = {}
 lcd_flags["spd"] = {byte = 1, mask = 0x08, value = 1}
 lcd_flags["mach"] = {byte = 1, mask = 0x04, value = 0}
 lcd_flags["hdg"] = {byte = 0, mask = 0x80, value = 0}
@@ -166,7 +166,7 @@ end
 --      ---
 --       D
 -- A=0x80, B=0x40, C=0x20, D=0x10, E=0x02, F=0x08, G=0x04
-lcd_mapping = {}
+local lcd_mapping = {}
 lcd_mapping['0'] = 0xfa
 lcd_mapping['1'] = 0x60
 lcd_mapping['2'] = 0xd6
