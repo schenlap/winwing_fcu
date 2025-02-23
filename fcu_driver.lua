@@ -55,7 +55,7 @@ btn["ALT100"] = {id=25,dataref="laminar/A333/autopilot/alt_step_left"}
 btn["ALT1000"] = {id=26,dataref="laminar/A333/autopilot/alt_step_right"}
 
 function assign_button()
-    for btn, info in pairs(btn) do
+    for _, info in pairs(btn) do
         set_button_assignment(info.id+FCU_BUTTON_BEGIN, info.dataref)
     end
 end
