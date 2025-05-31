@@ -12,15 +12,13 @@ import socket
 import struct
 
 #for raw usb
-import re
-import subprocess
+#import re
+#import subprocess
 
 from threading import Thread, Event, Lock
 from time import sleep
 
-import usb.core
-import usb.backend.libusb1
-import usb.util
+import hid
 
 import XPlaneUdp
 
@@ -633,7 +631,8 @@ def fcu_create_events(ep_in, ep_out):
                 print(f' *** continue after usb-in error: {error} ***')
                 continue
             if len(data_in) != 41:
-                print(f'rx data count {len(data_in)} not valid')
+                if len(data_in) != 64:
+                    print(f'rx data count {len(data_in)} not valid')
                 continue
             buttons=data_in[1] | (data_in[2] << 8) | (data_in[3] << 16) | (data_in[4] << 24) # FCU
             if device_config & DEVICEMASK.EFISR:
@@ -800,23 +799,45 @@ def kb_wait_quit_event():
         os._exit(0)
 
 
-def find_usblib():
-    path = ['/opt/homebrew/lib/libusb-1.0.0.dylib',
-            '/usr/lib/x86_64-linux-gnu/libusb-1.0.so.0',
-            '/usr/lib/libusb-1.0.so.0']
-    pathlist = list(enumerate(path))
-    for p in range(len(pathlist)):
-        backend = usb.backend.libusb1.get_backend(find_library=lambda x: pathlist[p][1])
-        if backend:
-            print(f"using {pathlist[p][1]}")
-            return backend
+class UsbManager:
+    def __init__(self):
+        self.device = None
+        self.device_config = 0
 
-    print(f"*** No usblib found. Install it with:")
-    print(f"***   debian: apt install libusb1")
-    print(f"***   mac: brew install libusb")
-    print(f"***   If you get this warning and fcu is working, please open an issue at")
-    print(f"***   https://github.com/schenlap/winwing_fcu")
-    return None
+    def connect_device(self, vid: int, pid: int):
+
+        # Connect to device. Linux uses device whreas mac uses Device
+        try:
+            self.device = hid.device()
+            self.device.open(vid, pid)
+        except AttributeError as e:
+            print("using hidapi mac version")
+            self.device = hid.Device(vid=vid, pid=pid)
+
+        if self.device is None:
+            raise RuntimeError("Device not found")
+
+        print("Device connected.")
+
+    def find_device(self):
+        device_config = 0
+
+        devlist = [{'vid':0x4098, 'pid':0xbb10, 'name':'FCU', 'mask':DEVICEMASK.FCU},
+               {'vid':0x4098, 'pid':0xbc1e, 'name':'FCU + EFIS-R', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISR},
+               {'vid':0x4098, 'pid':0xbc1d, 'name':'FCU + EFIS-L ', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL},
+               {'vid':0x4098, 'pid':0xba01, 'name':'FCU + EFIS-L + EFIS-R', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL | DEVICEMASK.EFISR}
+        ]
+
+        for d in devlist:
+            print(f"now searching for winwing {d['name']} ... ", end='')
+            found = False
+            for dev in hid.enumerate():
+                if dev['vendor_id'] == d['vid'] and dev['product_id'] == d['pid']:
+                    print("found")
+                    self.device_config |= d['mask']
+                    return d['vid'], d['pid'], self.device_config
+            print("not found")
+        return None, None, 0
 
 
 def main():
@@ -827,26 +848,13 @@ def main():
 
     print(f"starting winwing_fcu, {VERSION}")
 
-    backend = find_usblib()
+    usb_mgr = UsbManager()
+    vid, pid, device_config = usb_mgr.find_device()
 
-    devlist = [{'vid':0x4098, 'pid':0xbb10, 'name':'FCU', 'mask':DEVICEMASK.FCU},
-               {'vid':0x4098, 'pid':0xbc1e, 'name':'FCU + EFIS-R', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISR},
-               {'vid':0x4098, 'pid':0xbc1d, 'name':'FCU + EFIS-L ', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL},
-               {'vid':0x4098, 'pid':0xba01, 'name':'FCU + EFIS-L + EFIS-R', 'mask':DEVICEMASK.FCU | DEVICEMASK.EFISL | DEVICEMASK.EFISR}]
-
-    for d in devlist:
-        print(f"searching for winwing {d['name']} ... ", end='')
-        device = usb.core.find(idVendor=d['vid'], idProduct=d['pid'], backend=backend)
-        if device is not None:
-            print(f"found")
-            device_config |= d['mask']
-            break
-        else:
-            print(f"not found")
-
-    if device is None:
+    if pid is None:
         exit(f"No compatible winwing device found, quit")
-
+    else:
+        usb_mgr.connect_device(vid=vid, pid=pid)
 
     print('compatible with X-Plane 11/12 and all Toliss Airbus')
 
@@ -854,15 +862,8 @@ def main():
     datacache['baro_efisr_last'] = None
     datacache['baro_efisl_last'] = None
 
-    interface = device[0].interfaces()[0]
-    if device.is_kernel_driver_active(interface.bInterfaceNumber):
-        device.detach_kernel_driver(interface.bInterfaceNumber)
-
-    device.set_configuration()
-
-    endpoints = device[0].interfaces()[0].endpoints()
-    fcu_out_endpoint = endpoints[1]
-    fcu_in_endpoint = endpoints[0]
+    fcu_out_endpoint = usb_mgr.device
+    fcu_in_endpoint = usb_mgr.device
     
     leds = [Leds.SCREEN_BACKLIGHT]
     if device_config & DEVICEMASK.EFISR:
