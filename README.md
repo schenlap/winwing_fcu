@@ -19,20 +19,20 @@ Supported Hardware:
 2. copy `udev/71-winwing.rules` to `/etc/udev/rules.d`  
 `sudo cp udev/71-winwing.rules /etc/udev/rules.d/`
 3. install dependencies (on debian based systems)  
-`sudo aptitude install python3-usb`
-4. start script (with udev rule no sudo needed): `python3 ./winwing_fcu.py` when X-Plane with Toliss aircraft is loaded.
+`sudo aptitide install python3-hid libhidapi-hidraw0`
+5. start script (with udev rule no sudo needed): `python3 ./winwing_mcdu.py`.
 
 
 #### MAC-OS
 
 1. clone the repo where you want
-2. install homebrew
-3. install dependencies
-`python3 -m pip install pyusb`
-4. brew install libusb
-5. let pyusb find libusb: `ln -s /opt/homebrew/lib ~/lib` 
-6. start script with sudo: `sudo python3 ./winwing_fcu.py` when X-Plane with Toliss aircraft is loaded.
-7. A detailed installation instruction can be found on [x-plane forum](https://forums.x-plane.org/index.php?/forums/topic/310045-winwing-fcu-on-plane-12-on-a-mac-studio/&do=findComment&comment=2798635).
+2. change into the directory `cd winwing_mcdu`
+3. install homebrew
+4. install dependencies
+`python3 -m pip install hid`
+5. brew install hidapi
+6. let hid find hidapi: `ln -s /opt/homebrew/lib/libhidapi.dylib .`or `ln -s /usr/local/Cellar/hidapi/0.15.0/lib/libhidapi.dylib .`wherever your libhidapi is installed
+7. start script with: `python3 ./winwing_fcu.py`.
 
 ## Use FCU
 1. start X-Plane
