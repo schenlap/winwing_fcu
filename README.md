@@ -1,3 +1,5 @@
+**This project is no longer maintained.** The successor https://github.com/schenlap/XSchenFly combines all devices into one script.
+
 # Winwing Fcu
 This script is to use Winwing A320 FCU on Linux (maybe Mac-OS) with X-Plane. 
 All buttons, leds and lcd displays work the same way as in X-Plane.<br>
